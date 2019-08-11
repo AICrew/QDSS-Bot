@@ -1,0 +1,198 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.css"/>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+
+        <style>
+            html{
+            }
+            body{
+                background-color: #222 !important;
+                background-image: url('img/banner.png');
+                background-position: bottom; 
+                background-repeat: no-repeat; /* Do not repeat the image */
+                background-size: cover;
+            }
+            .navbar-dark{
+                width: 80% !important;
+                margin-left: auto;
+                margin-right: auto;
+
+            }
+            div#giocatori_filter{
+                display: none;
+            }
+            th{
+                color: white !important;
+            }
+            .table-secondary, .table-secondary > th, .table-secondary > td{
+                vertical-align: middle !important;
+            }
+            label{
+                color: white !important;
+            }
+            div#giocatori_wrapper{
+                position: center !important;
+                width: 80% !important;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            div.dataTables_wrapper div.dataTables_info{
+                display: none !important; 
+            }
+        </style>
+
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="/giocatori"><h1>Giocatori QDSS</h1></a>
+
+            <div id="navbarColor01">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/giocatori">Giocatori</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/classifica">Classifica</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <table id="giocatori"  class="table table-hover" style="position:center;text-align:center;padding:50px;padding-top:0px;width: 80%">
+            <thead></thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+
+
+        <script>
+            var users = <%- users %>;
+            $(document).ready(function() {
+                var shuffle = function (array) {
+                    var currentIndex = array.length;
+                    var temporaryValue, randomIndex;
+                    // While there remain elements to shuffle...
+                    while (0 !== currentIndex) {
+                        // Pick a remaining element...
+                        randomIndex = Math.floor(Math.random() * currentIndex);
+                        currentIndex -= 1;
+
+                        // And swap it with the current element.
+                        temporaryValue = array[currentIndex];
+                        array[currentIndex] = array[randomIndex];
+                        array[randomIndex] = temporaryValue;
+                    }
+                    return array;
+                };
+
+                var shuffledUsers = shuffle(users);
+
+
+            var table = $('#giocatori').DataTable( {
+                    initComplete: function () {
+                        this.api().columns([3]).every( function () {
+                            var column = this;
+                            var select = $('</br><select><option value=""></option></select>')
+                                .appendTo( $(column.header()) )
+                                    .on( 'change', function () {
+                                        var val = $.fn.dataTable.util.escapeRegex(
+                                            $(this).val()
+                                        );
+                                        column
+                                            .search( val ? '^'+val+'$' : '', true, false )
+                                            .draw();
+                                    } );
+                    
+                                column.data().unique().sort().each( function ( d, j ) {
+                                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                                } );
+                        });
+                    },
+                    "createdRow": function(row, data, dataIndex) {
+                            $(row).attr({class:"table-secondary"});
+                    },
+                    "dom": '<"top"i>rt<"bottom"flp><"clear">',
+                    data: shuffledUsers,
+                    //"bFilter": false,
+                    "order": [[ 4, "asc" ]],
+                    "columnDefs": [
+                        {
+                            "title": "Avatar",
+                            "targets": [ 0 ],
+                            "data": "avatar",
+                            "render": function ( data, type, row, meta ) {
+                                    return '<img width="50" heigth="50" style="border-radius:50%" src="'+data+'"></img>';
+                            },
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": false
+                        },
+                        {
+                            "title": "Tag",
+                            "targets": [ 1 ],
+                            "data": "tag",
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": false
+                        },
+                        {
+                            "title": "Nickname",
+                            "targets": [ 2 ],
+                            "data": "nickname",
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": false
+                        },
+                        {
+                            "title": "Gioco",
+                            "targets": [ 3 ],
+                            "data": "gioco",
+                            "visible": true,
+                            "searchable": true,
+                            "orderable": false
+                        },
+                        {
+                            "title": "Status",
+                            "targets": [ 4 ],
+                            "data": "status",
+                            "render": function ( data, type, row, meta ) {
+                                if ( type === "display" ){
+                                    if (data == '1') return '<img width="50" heigth="50" src="./img/green_dot.png"></img>';
+                                    else if (data == '4') return '<img width="50" heigth="50" src="./img/grey_dot.png"></img>';
+                                    else if (data == '2') return '<img width="50" heigth="50" src="./img/orange_dot.png"></img>';
+                                    else if (data == '3') return '<img width="50" heigth="50" src="./img/red_dot.png"></img>';
+                                    return data;
+                                }
+                                return data;
+                            },
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": true
+                        },
+                    ]
+                } );
+            } );
+
+            $('#giocatori').removeClass( 'display' ).addClass('table table-hover');
+
+
+        </script>
+    </body>
+<html>
