@@ -1,5 +1,5 @@
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -41,6 +41,9 @@ bower_components
 
 # node-waf configuration
 .lock-wscript
+
+# PM2 configuration files
+ecosystem.config.js
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
