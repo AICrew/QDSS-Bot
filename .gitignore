@@ -16,6 +16,7 @@ data/
 
 # VS Code
 .vscode/
+*.code-workspace
 
 # Runtime data
 pids
