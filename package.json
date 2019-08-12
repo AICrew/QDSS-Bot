@@ -1,49 +1,45 @@
 {
-  "name": "guidebot",
-  "version": "5.0.0",
-  "description": "A boilerplate example bot with command handler and reloadable commands. Updated and Maintained by the Idiot's Guide Community",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "prepublish": "node util/setup.js"
-  },
-  "engines": {
-    "node": ">=8"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/An-Idiots-Guide/guidebot-class.git"
-  },
-  "author": "Evelyne Lachance <eslachance@gmail.com> (http://evie.codes)",
-  "contributors": [
-    "York (http://anidiots.guide)"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/An-Idiots-Guide/guidebot-class/issues"
-  },
-  "homepage": "https://github.com/An-Idiots-Guide/guidebot-class#readme",
+  "name": "qdss-bot",
+  "version": "1.0.0",
+  "description": "Utility bot for QDSS's Discord community (based on discord.js)",
+  "main": "./src/index.js",
   "dependencies": {
-    "better-sqlite-pool": "github:eslachance/better-sqlite-pool",
+    "better-sqlite-pool": "^0.1.2",
     "body-parser": "^1.19.0",
-    "chalk": "^2.4.1",
+    "chalk": "^2.4.2",
     "discord.js": "^11.5.1",
     "dotenv": "^8.0.0",
     "ejs": "^2.6.2",
-    "enmap": "^4.3.2",
+    "enmap": "^4.8.7",
     "express": "^4.17.1",
     "express-password-protect": "^1.0.2",
     "express-session": "^1.16.2",
     "klaw": "^2.1.1",
-    "moment": "^2.22.2",
-    "moment-duration-format": "^2.2.2",
+    "moment": "^2.24.0",
+    "moment-duration-format": "^2.3.2",
     "node-cron": "^2.0.3",
-    "readline-sync": "^1.4.9",
+    "readline-sync": "^1.4.10",
     "redis": "^2.8.0",
     "redis-server": "^1.2.2",
     "sqlite3": "^4.0.9",
     "wpapi": "^1.2.1",
     "youtube-search": "^1.1.4"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AICrew/QDSS-Bot.git"
+  },
+  "keywords": [
+    "discord-bot"
+  ],
+  "author": "AICrew",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AICrew/QDSS-Bot/issues"
+  },
+  "homepage": "https://github.com/AICrew/QDSS-Bot#readme"
 }
