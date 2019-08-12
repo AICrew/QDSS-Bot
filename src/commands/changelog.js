@@ -56,7 +56,7 @@ class Changelog extends Command {
 					"Una volta selezionate le opzioni desiderate, premere su \u2705 per pubblicare il post oppure su \uD83D\uDEAB per annullare l'operazione...")
                 .then(async (msg2) => {
                     
-                    await msg2.react('📢');		// :loudspeaker: 
+                    await msg2.react('📢');		 // :loudspeaker: 
                     await msg2.react('📌');		 // :pushpin: 
                     await msg2.react('🚫');		 // :no_entry_sign: 
                     await msg2.react('✅');	    // :white_check_mark: 
@@ -93,7 +93,13 @@ class Changelog extends Command {
 
                             // Invio del messaggio nell'apposito canale testuale su Discord
 							const changelog = `***${titolo}***\n\n${everyone ? "@everyone " : ""}${contenuto}`;
-                            channel.send(changelog).then(announcement => { if (pin) announcement.pin(); });
+                            channel.send(changelog).then(async (announcement) => 
+                            {
+                                await announcement.react('👍');     // :thumbsup:
+                                await announcement.react('👎');     // :thumbsdown:
+
+                                if (pin) announcement.pin(); 
+                            });
             
                             reactCollector.stop();
                         }
