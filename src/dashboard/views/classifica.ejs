@@ -1,0 +1,179 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.css"/>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+
+        <style>
+            html{
+            }
+            body{
+                background-color: #222 !important;
+                background-image: url('img/banner.png');
+                background-position: bottom; 
+                background-repeat: no-repeat; /* Do not repeat the image */
+                background-size: cover;
+                float: none ;margin: 0 auto;
+            }
+            .navbar-dark{
+                width: 80% !important;
+                margin-left: auto;
+                margin-right: auto;
+
+            }
+            div#classifica_filter{
+                display: none;
+            }
+            th{
+                color: white !important;
+            }
+            .table-secondary, .table-secondary > th, .table-secondary > td{
+                vertical-align: middle !important;
+            }
+            label{
+                color: white !important;
+            }
+            div#classifica_wrapper{
+                position: center !important;
+                width: 80% !important;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            div.dataTables_wrapper div.dataTables_info{
+                display: none !important; 
+            }
+        </style>
+
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="/classifica"><h1>Classifica QDSS</h1></a>
+
+            <div id="navbarColor01">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/giocatori">Giocatori</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/classifica">Classifica</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <table id="classifica" class="table table-hover" style="position:center;text-align:center;padding:50px;padding-top:0px;width: 80%">
+            <thead></thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+
+
+        <script>
+            var users = <%- users %>;
+
+            $(document).ready(function() {
+
+                var table = $('#classifica').DataTable( {
+                    data: users,
+                    "createdRow": function(row, data, dataIndex) {
+                        $(row).attr({class:"table-secondary"});
+                    },
+                    "dom": '<"top"i>rt<"bottom"flp><"clear">',
+                    "order": [[ 3, "desc" ]],
+                    "columnDefs": [
+                        {
+                            "title": "Avatar",
+                            "targets": [ 0 ],
+                            "data": "avatar",
+                            "render": function ( data, type, row, meta ) {
+                                return '<img width="50" heigth="50" style="border-radius:50%" src="'+data+'"></img>';
+                            },
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": false
+                        },
+                        {
+                            "title": " Discord Tag",
+                            "targets": [ 1 ],
+                            "data": "tag",
+                            "visible": true,
+                            "searchable": true,
+                            "orderable": false
+                        },
+                        {
+                            "title": "Livello",
+                            "targets": [ 2 ],
+                            "data": "level",
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": true
+                        },
+                        {
+                            "title": "Reputazione",
+                            "targets": [ 5 ],
+                            "data": "rep",
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": true
+                        },
+                        {
+                            "title": "XP Totale",
+                            "targets": [ 3 ],
+                            "data": "totalxp",
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": true
+                        },
+                        {
+                            "title": "Progresso Livello",
+                            "targets": [ 4 ],
+                            "data": "levelxp",
+                            "render": function ( data, type, row, meta ) {
+                                var level = row.level;
+                                var levelxp = row.levelxp
+                                var finalxp = (5 * Math.pow(level, 2)) + (50 * level) + 100 ;
+                                var value = Math.round((levelxp*100)/finalxp);
+                                return value +'% ('+ levelxp +' XP)</br><div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'+levelxp+'" aria-valuemin="0" aria-valuemax="'+finalxp+'" style="width:'+ value +'%; color: black;background-color: #007bff;"></div></div>';
+                            },
+                            "visible": true,
+                            "searchable": false,
+                            "orderable": true
+                        }
+
+                    ]
+                } );
+
+                $('#classifica').removeClass( 'display' ).addClass('table table-hover');
+
+                    table.columns([1]).every( function () {
+                        var column = this;
+                        var title = $(this).text();
+                        var search = $('</br><input type="text" placeholder="Search '+title+'" />')
+                                .appendTo( $(column.header()))
+                                .on( 'keyup change clear', function () {
+                                        if ( column.search() !== this.value ) {
+                                            column
+                                                .search( this.value )
+                                                .draw();
+                                        }
+                                } );
+                    } );
+            } );
+        </script>
+    </body>
+<html>
