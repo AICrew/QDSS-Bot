@@ -63,6 +63,12 @@ app.get("/giocatori", (req, res) => {
       const gameName = rows[0].nomeCompleto;
       const color = rows[0].colore;
       const logo = rows[0].logo;
+
+      var check = function check(user){
+        return user.nomeCompleto === 'Apex Legends';
+      }
+      var filter = rows.filter(check);
+      console.log('DB Apex Legends: '+ filter.length);
   
       const users = new Array();
   
@@ -70,22 +76,34 @@ app.get("/giocatori", (req, res) => {
         await client.fetchUser(rows[i].userId, true).then( (user) => {
           if (!user) return;
           // Si ottiene lo stato di presenza dell'utente e lo si inserisce nell'array corrispondente
-          const avatar = user.avatarURL;
           //const status = user.presence.status;
           function status(){
-            if (user.presence.status == 'online') a = "1";
-            else if (user.presence.status == 'idle') a = "2";
-            else if (user.presence.status == 'dnd') a = "3";
-            else if (user.presence.status == 'offline') a= "4";
+            if (user.presence.status == 'online') s = "1";
+            else if (user.presence.status == 'idle') s = "2";
+            else if (user.presence.status == 'dnd') s = "3";
+            else if (user.presence.status == 'offline') s = "4";
+          }
+
+          function avatar(){
+            if (user.avatarURL) a = user.avatarURL;
+            else a = "http://aicrew.it/img/icon_discord.png";
           }
 
           status();
-
-          var status = a;
+          var status = s;
           
-          if (avatar) users.push({tag: user.tag, nickname: rows[i].nickname, gioco: rows[i].nomeCompleto, avatar: avatar, status: status});
+          avatar();
+          var avatar = a;
+
+          users.push({tag: user.tag, nickname: rows[i].nickname, gioco: rows[i].nomeCompleto, avatar: avatar, status: status});
         }).catch( (err) => console.log("User " + rows[i].userId + " doesn't exist anymore, " + err));
       }
+      var check = function check(user){
+        return user.gioco === 'Apex Legends';
+      }
+      var filter = users.filter(check);
+      console.log('Array Apex Legends: '+ filter.length);
+
       usersParsed = JSON.stringify(users);
       res.render('giocatori', {users: usersParsed, path: req.path});
     }
@@ -108,8 +126,15 @@ app.get("/classifica", (req, res) => {
         await client.fetchUser(rows[i].userId, true).then( (user) => {
           if (!user) return;
           // Si ottiene lo stato di presenza dell'utente e lo si inserisce nell'array corrispondente
-          const avatar = user.avatarURL;     
-          if (avatar) users.push({tag: user.tag, avatar: avatar, level: rows[i].level, totalxp: rows[i].totalxp, levelxp: rows[i].levelxp, rep: rows[i]['SUM(deltaRep)']});
+          function avatar(){
+            if (user.avatarURL) a = user.avatarURL;
+            else a = "http://aicrew.it/img/icon_discord.png";
+          }
+
+          avatar();
+          var avatar = a;
+
+          users.push({tag: user.tag, avatar: avatar, level: rows[i].level, totalxp: rows[i].totalxp, levelxp: rows[i].levelxp, rep: rows[i]['SUM(deltaRep)']});
         }).catch( (err) => console.log("User " + rows[i].userId + " doesn't exist anymore, " + err));
       }
       usersParsed = JSON.stringify(users);
