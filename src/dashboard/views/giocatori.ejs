@@ -1,23 +1,29 @@
-<<<<<<< HEAD
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.css"/>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/responsive.bootstrap4.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css">
 
         <style>
             html{
             }
             body{
                 background-color: #222 !important;
-                background-image: url('img/banner.png');
-                background-position: bottom; 
+                background-image: url('img/Synergo.png'), url('img/Redez.png');
+                background-position: left bottom, right bottom ; 
                 background-repeat: no-repeat; /* Do not repeat the image */
-                background-size: cover;
+                background-size: 250px 250px, 250px 250px;
+                
             }
             .navbar-dark{
                 width: 80% !important;
@@ -46,210 +52,32 @@
             div.dataTables_wrapper div.dataTables_info{
                 display: none !important; 
             }
-        </style>
-
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <a class="navbar-brand" href="/giocatori"><h1>Giocatori QDSS</h1></a>
-
-            <div id="navbarColor01">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/giocatori">Giocatori</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/classifica">Classifica</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-
-        <table id="giocatori"  class="table table-hover" style="position:center;text-align:center;padding:50px;padding-top:0px;width: 80%">
-            <thead></thead>
-            <tbody></tbody>
-            <tfoot>
-                <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            </tfoot>
-        </table>
-
-
-        <script>
-            var users = <%- users %>;
-            $(document).ready(function() {
-                var shuffle = function (array) {
-                    var currentIndex = array.length;
-                    var temporaryValue, randomIndex;
-                    // While there remain elements to shuffle...
-                    while (0 !== currentIndex) {
-                        // Pick a remaining element...
-                        randomIndex = Math.floor(Math.random() * currentIndex);
-                        currentIndex -= 1;
-
-                        // And swap it with the current element.
-                        temporaryValue = array[currentIndex];
-                        array[currentIndex] = array[randomIndex];
-                        array[randomIndex] = temporaryValue;
-                    }
-                    return array;
-                };
-
-                var shuffledUsers = shuffle(users);
-
-
-            var table = $('#giocatori').DataTable( {
-                    initComplete: function () {
-                        this.api().columns([3]).every( function () {
-                            var column = this;
-                            var select = $('</br><select><option value=""></option></select>')
-                                .appendTo( $(column.header()) )
-                                    .on( 'change', function () {
-                                        var val = $.fn.dataTable.util.escapeRegex(
-                                            $(this).val()
-                                        );
-                                        column
-                                            .search( val ? '^'+val+'$' : '', true, false )
-                                            .draw();
-                                    } );
-                    
-                                column.data().unique().sort().each( function ( d, j ) {
-                                    select.append( '<option value="'+d+'">'+d+'</option>' )
-                                } );
-                        });
-                    },
-                    "createdRow": function(row, data, dataIndex) {
-                            $(row).attr({class:"table-secondary"});
-                    },
-                    "dom": '<"top"i>rt<"bottom"flp><"clear">',
-                    data: shuffledUsers,
-                    //"bFilter": false,
-                    "order": [[ 4, "asc" ]],
-                    "columnDefs": [
-                        {
-                            "title": "Avatar",
-                            "targets": [ 0 ],
-                            "data": "avatar",
-                            "render": function ( data, type, row, meta ) {
-                                    return '<img width="50" heigth="50" style="border-radius:50%" src="'+data+'"></img>';
-                            },
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": false
-                        },
-                        {
-                            "title": "Tag",
-                            "targets": [ 1 ],
-                            "data": "tag",
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": false
-                        },
-                        {
-                            "title": "Nickname",
-                            "targets": [ 2 ],
-                            "data": "nickname",
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": false
-                        },
-                        {
-                            "title": "Gioco",
-                            "targets": [ 3 ],
-                            "data": "gioco",
-                            "visible": true,
-                            "searchable": true,
-                            "orderable": false
-                        },
-                        {
-                            "title": "Status",
-                            "targets": [ 4 ],
-                            "data": "status",
-                            "render": function ( data, type, row, meta ) {
-                                if ( type === "display" ){
-                                    if (data == '1') return '<img width="50" heigth="50" src="./img/green_dot.png"></img>';
-                                    else if (data == '4') return '<img width="50" heigth="50" src="./img/grey_dot.png"></img>';
-                                    else if (data == '2') return '<img width="50" heigth="50" src="./img/orange_dot.png"></img>';
-                                    else if (data == '3') return '<img width="50" heigth="50" src="./img/red_dot.png"></img>';
-                                    return data;
-                                }
-                                return data;
-                            },
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": true
-                        },
-                    ]
-                } );
-            } );
-
-            $('#giocatori').removeClass( 'display' ).addClass('table table-hover');
-
-
-        </script>
-    </body>
-=======
-<html>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.css"/>
-        <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
-
-        <style>
-            html{
-            }
-            body{
-                background-color: #222 !important;
-                background-image: url('img/banner.png');
-                background-position: bottom; 
-                background-repeat: no-repeat; /* Do not repeat the image */
-                background-size: cover;
-            }
-            .navbar-dark{
-                width: 80% !important;
-                margin-left: auto;
-                margin-right: auto;
-
-            }
-            div#giocatori_filter{
+            .hide{
                 display: none;
             }
-            th{
-                color: white !important;
+            .tooltip-inner {
+                min-width: 350px;
+                padding: 3px 8px;
+                color: #fff;
+                text-align: center;
+                background-color: #000;
+                border-radius: .25rem;
             }
-            .table-secondary, .table-secondary > th, .table-secondary > td{
-                vertical-align: middle !important;
+
+            .modal-body{
+                overflow-x: auto !important;
+                overflow-y: auto !important;
             }
-            label{
-                color: white !important;
-            }
-            div#giocatori_wrapper{
-                position: center !important;
-                width: 80% !important;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            div.dataTables_wrapper div.dataTables_info{
-                display: none !important; 
+            .modal-footer {
+                overflow-x: auto !important;
+                overflow-y: auto !important;
             }
         </style>
 
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark">
-            <a class="navbar-brand" href="/giocatori"><h1>Giocatori QDSS</h1></a>
+            <a class="navbar-brand" href="/qdss/giocatori"><h1>Giocatori QDSS</h1></a>
 
             <div id="navbarColor01">
                 <ul class="navbar-nav mr-auto">
@@ -257,10 +85,10 @@
                         <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/giocatori">Giocatori</a>
+                        <a class="nav-link" href="/qdss/giocatori">Giocatori</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/classifica">Classifica</a>
+                        <a class="nav-link" href="/qdss/classifica">Classifica</a>
                     </li>
                 </ul>
             </div>
@@ -279,12 +107,14 @@
                 </tr>
             </tfoot>
         </table>
+    </body>
 
 
-        <script>
-            var users = <%- users %>;
-            $(document).ready(function() {
-                var shuffle = function (array) {
+    <script>
+        var users = <%- users %>;
+        $(document).ready(function() {
+
+            var shuffle = function (array) {
                     var currentIndex = array.length;
                     var temporaryValue, randomIndex;
                     // While there remain elements to shuffle...
@@ -299,33 +129,86 @@
                         array[randomIndex] = temporaryValue;
                     }
                     return array;
-                };
-
-                var shuffledUsers = shuffle(users);
-
+            };
+ 
+            var shuffledUsers = shuffle(users);
 
             var table = $('#giocatori').DataTable( {
                     initComplete: function () {
                         this.api().columns([3]).every( function () {
                             var column = this;
                             var select = $('</br><select><option value=""></option></select>')
-                                .appendTo( $(column.header()) )
-                                    .on( 'change', function () {
-                                        var val = $.fn.dataTable.util.escapeRegex(
-                                            $(this).val()
-                                        );
-                                        column
-                                            .search( val ? '^'+val+'$' : '', true, false )
-                                            .draw();
+                                    .appendTo( $(column.header()) )
+                                        .on( 'change', function () {
+                                            var val = $.fn.dataTable.util.escapeRegex(
+                                                $(this).val()
+                                            );
+                                            column
+                                                .search( val ? '^'+val+'$' : '', true, false )
+                                                .draw();
+                                        } );
+                        
+                                    column.data().unique().sort().each( function ( d, j ) {
+                                        select.append( '<option value="'+d+'">'+d+'</option>' )
                                     } );
-                    
-                                column.data().unique().sort().each( function ( d, j ) {
-                                    select.append( '<option value="'+d+'">'+d+'</option>' )
-                                } );
                         });
                     },
-                    "createdRow": function(row, data, dataIndex) {
-                            $(row).attr({class:"table-secondary"});
+                    "createdRow": function(row, data, dataIndex, cells) {
+                        $(row).attr({class:"table-secondary"});
+                        var level = data.level;
+                        var levelxp = data.levelxp;
+                        var finalxp = (5 * Math.pow(level, 2)) + (50 * level) + 100;
+                        var value = Math.round((levelxp*100)/finalxp);
+
+                        var cell = $('td', row).eq(1);
+                        cell.attr("data-toggle", "modal");
+                        cell.attr("data-target","#Modal-"+dataIndex);
+                        cell.attr({rel:"modal"});
+                        var elements = $();
+                        var list = data.giochi
+                        $.each(list, function(giochi, lista){
+                            elements = elements.add(`<tr id="p-${dataIndex}-gioco"><td>${lista.nomeCompleto}</td><td> ${lista.nickname}</td></tr>`);
+                            
+                        })
+                        $.when(cell.append(`<div id='Modal-${dataIndex}' class="modal fade" role="dialog">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header" style="align:center">
+                                                    <h4 >${data.tag}</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <img src="${data.avatar}" width="150" heigth="150" style="border-radius:50%;padding:10px"><img>
+                                                    <div style="padding: 10px;">
+                                                        <p>Reputazione: ${data.rep}</p>
+                                                        <p>Livello: ${data.level}</p>
+                                                        <p>Progresso Livello: ${value}% (${levelxp}XP)</p>
+                                                        <div class="progress">
+                                                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${levelxp}" aria-valuemin="0" aria-valuemax="${finalxp}" style="width:${value}%; color: black;background-color: #007bff;">
+                                                        </div>
+                                                    </div>
+                                                    <hr style="height: 15px; width: 100%; margin: 0 auto;line-height:1px;background-color: white"; border:0 none; />
+                                                    <div style="float:none; padding:10px">
+                                                        <h4>Liste Registrate </h4>
+                                                        <table align="center" style="float:none; width: 100%;">
+                                                            <tbody id="gioco-${dataIndex}" style="float:none;">
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                <!--</div>
+                                                <div class="modal-footer">
+                                                </div>-->
+                                            </div>
+                                        </div>
+                                    <div>`                                     
+                        )).then(
+                            function(){
+                                for (i = 0; i < elements.length; i++){
+                                    console.log(elements[i])
+                                    $('#gioco-'+dataIndex).append(elements[i]);
+                                }
+                            }
+                        )
+
                     },
                     "dom": '<"top"i>rt<"bottom"flp><"clear">',
                     data: shuffledUsers,
@@ -337,7 +220,7 @@
                             "targets": [ 0 ],
                             "data": "avatar",
                             "render": function ( data, type, row, meta ) {
-                                    return '<img width="50" heigth="50" style="border-radius:50%" src="'+data+'"></img>';
+                                        return '<img width="50" heigth="50" style="border-radius:50%" src="'+data+'"></img>';
                             },
                             "visible": true,
                             "searchable": false,
@@ -349,50 +232,47 @@
                             "data": "tag",
                             "visible": true,
                             "searchable": false,
-                            "orderable": false
+                            "orderable": false,
                         },
                         {
-                            "title": "Nickname",
-                            "targets": [ 2 ],
-                            "data": "nickname",
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": false
+                                "title": "Nickname",
+                                "targets": [ 2 ],
+                                "data": "nickname",
+                                "visible": true,
+                                "searchable": false,
+                                "orderable": false
                         },
                         {
-                            "title": "Gioco",
-                            "targets": [ 3 ],
-                            "data": "gioco",
-                            "visible": true,
-                            "searchable": true,
-                            "orderable": false
+                                "title": "Gioco",
+                                "targets": [ 3 ],
+                                "data": "gioco",
+                                "visible": true,
+                                "searchable": true,
+                                "orderable": false
                         },
                         {
-                            "title": "Status",
-                            "targets": [ 4 ],
-                            "data": "status",
-                            "render": function ( data, type, row, meta ) {
-                                if ( type === "display" ){
-                                    if (data == '1') return '<img width="50" heigth="50" src="./img/green_dot.png"></img>';
-                                    else if (data == '4') return '<img width="50" heigth="50" src="./img/grey_dot.png"></img>';
-                                    else if (data == '2') return '<img width="50" heigth="50" src="./img/orange_dot.png"></img>';
-                                    else if (data == '3') return '<img width="50" heigth="50" src="./img/red_dot.png"></img>';
+                                "title": "Status",
+                                "targets": [ 4 ],
+                                "data": "status",
+                                "render": function ( data, type, row, meta ) {
+                                    if ( type === "display" ){
+                                        if (data == '1') return '<img width="50" heigth="50" src="./img/green_dot.png"></img>';
+                                        else if (data == '4') return '<img width="50" heigth="50" src="./img/grey_dot.png"></img>';
+                                        else if (data == '2') return '<img width="50" heigth="50" src="./img/orange_dot.png"></img>';
+                                        else if (data == '3') return '<img width="50" heigth="50" src="./img/red_dot.png"></img>';
+                                        return data;
+                                    }
                                     return data;
-                                }
-                                return data;
-                            },
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": true
+                                },
+                                "visible": true,
+                                "searchable": false,
+                                "orderable": true
                         },
                     ]
-                } );
             } );
-
             $('#giocatori').removeClass( 'display' ).addClass('table table-hover');
 
+        })
 
-        </script>
-    </body>
->>>>>>> c1bd1e63e504a0789d4cf8ceda6a45c30fd02dd1
+    </script>
 <html>

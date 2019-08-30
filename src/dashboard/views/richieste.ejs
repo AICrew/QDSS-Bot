@@ -1,0 +1,180 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.18/css/jquery.dataTables.css"/>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+        <script type="text/javascript" src="./script/dataTables.cellEdit.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+    </head>
+        <style>
+            html{
+            }
+            body{
+                background-color: #222 !important;
+                background-image: url('img/Synergo.png'), url('img/Redez.png');
+                background-position: left bottom, right bottom ; 
+                background-repeat: no-repeat; /* Do not repeat the image */
+                background-size: 250px 250px, 250px 250px;
+                
+            }
+            .navbar-dark{
+                width: 80% !important;
+                margin-left: auto;
+                margin-right: auto;
+
+            }
+            div#giocatori_filter{
+                display: none;
+            }
+            th{
+                color: white !important;
+            }
+            .table-secondary, .table-secondary > th, .table-secondary > td{
+                vertical-align: middle !important;
+            }
+            label{
+                color: white !important;
+            }
+            div#table_wrapper{
+                position: center !important;
+                width: 80% !important;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            div.dataTables_wrapper div.dataTables_info{
+                display: none !important; 
+            }
+        </style>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <a class="navbar-brand" href="/"><h1>Homepage</h1></a>
+
+            <div id="navbarColor01">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/qdss/giocatori">Giocatori</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/qdss/classifica">Classifica</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+            <table id="table" class="table table-hover" style="position:center;text-align:center;padding:50px;padding-top:0px;width: 80%">
+                <thead>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tfoot>
+            </table>
+    </body>
+
+    <script>
+    $(document).ready(function(){
+        var richieste = <%- richieste %>;
+        var table = $('#table').DataTable({
+            "createdRow": function(row, data, dataIndex, cells) {
+                            $(row).attr({class:"table-secondary"});
+            },
+            "dom": '<"top"i>rt<"bottom"flp><"clear">',
+            data: richieste,
+            order: [[ 1, 'desc' ]],
+            "columnDefs": [
+                {
+                    "title": "Elimina",
+                    "targets": [0],
+                    "data": null, 
+                    "defaultContent": "<button id='elimina'>Elimina</button>"
+                },
+                { 
+                    "title": "Request ID",
+                    "targets": [1],
+                    "data": "requestId",
+                    "visible": true,
+                    "searchable": true,
+                    "orderable": true
+                },
+                { 
+                    "title": "User",
+                    "targets": [2],
+                    "data": "user",
+                    "visible": true,
+                    "searchable": true,
+                    "orderable": true
+                },
+                { 
+                    "title": "Messaggio",
+                    "targets": [3],
+                    "data": "messaggio",
+                    "visible": true,
+                    "searchable": false,
+                    "orderable": false
+                },
+                { 
+                    "title": "Status",
+                    "targets": [4],
+                    "data": "status",
+                    "visible": true,
+                    "searchable": true,
+                    "orderable": false,
+                    "defaultContent": `<select><option value="Closed">Closed</option><option value="Open">Open</option></select>` }
+            ]
+        });
+
+        $('#table').removeClass( 'display' ).addClass('table table-hover');
+
+        function Callback(updatedCell, updatedRow, oldValue){
+
+            var data = updatedRow.data();
+            var status = updatedRow.data().status;
+            updateStatus(data, status);
+        }
+
+        table.MakeCellsEditable({
+            "onUpdate": Callback,
+            "columns": [4],
+            "inputTypes": [{
+                "column" : 4,
+                "type": "list",
+                "options": [                    
+                    { "value": "Open", "display": "Open" },
+                    { "value": "Closed", "display": "Closed" }
+                ]
+            }]
+        })
+    })
+
+    function updateStatus(data, status){
+        var RequestID = data.requestId;
+        var User = data.user;
+        var Messaggio = data.messaggio;
+        var Status = status
+
+        $.ajax({
+            type: "POST",
+            url: "/admin/richieste",
+            enctype: 'application/json',
+            data: {
+                RequestID: RequestID,
+                Status: Status
+            },
+            success: function () {
+                alert(`La richiesta #${RequestID} è ora impostata come ${status} `);
+            }
+        });
+
+    }
+    </script>
+</html>

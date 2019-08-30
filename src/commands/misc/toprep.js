@@ -13,7 +13,7 @@ class Toprep extends Command {
   constructor(client) {
     super(client, {
       name: "toprep",
-      description: "Mostra la classifica dei 10 utenti con la reputazione pi� alta",
+      description: "Mostra la classifica dei 10 utenti con la reputazione più alta",
       category: "Miscellaneous",
       usage: "+toprep",
       guildOnly: true

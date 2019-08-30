@@ -54,7 +54,7 @@ class Rep extends Command {
 		})
 		.then( () =>
 		{
-			return db.getAsync("SELECT * FROM Reputazione WHERE userFrom = ? AND userTo = ? ORDER BY timestamp DESC", [userFromId, userToId]);
+			return db.getAsync("SELECT * FROM Reputazione WHERE userFrom = ? ORDER BY timestamp DESC", [userFromId]);
 		})
 		.then( async (result) =>
 		{
@@ -64,7 +64,7 @@ class Rep extends Command {
 				const last = new Date(result.timestamp);
 				
 				if (tools.isSameDay(current, last))
-					return message.channel.send("Non è possibile assegnare più di 1 punto reputazione al giorno alla stessa persona");
+					return message.channel.send("Non è possibile assegnare più di 1 punto reputazione al giorno");
 			}
 
 			await db.runAsync("INSERT INTO Reputazione (userFrom, userTo, timestamp, deltaRep) " +
