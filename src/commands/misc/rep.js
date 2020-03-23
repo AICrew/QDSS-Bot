@@ -38,6 +38,10 @@ class Rep extends Command {
 	{
 		message.channel.send("**" + message.author.tag + "** crede di essere furbo... *nice try \\;)*");
 	}
+	else if (mentionedMember.bot)
+	{
+		message.channel.send("Non è possibile assegnare punti reputazione a un bot... *basta il pensiero*");
+	}
 	else
 	{
 		const userFromId = message.author.id;
