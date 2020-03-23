@@ -439,3 +439,78 @@ cron.schedule("0 * * * *", function()
     timezone: "Europe/Rome"
   });
 
+
+//feed
+var cheerio = require('cheerio')
+var Watcher  = require('feed-watcher'),
+feed     = 'https://qdss.it/feed',
+interval = 3600 // seconds
+var TurndownService = require('turndown');
+
+var watcher = new Watcher(feed, interval)
+
+// Check for new entries every n seconds.
+watcher.on('new entries', function (entries) {
+  entries.forEach(function (entry) {
+    console.log(entry['rss:title']['#'])
+
+    var title = entry.title;
+    var author = entry.author;
+    var link = entry.link;
+    var logo= 'https://scontent.fbri1-1.fna.fbcdn.net/v/t1.0-1/p200x200/16640956_558100834395740_3216339822482768615_n.png?_nc_cat=110&_nc_oc=AQlMmwSSbrUeioAOloqKNHfFvOO42zApJ2QEHeADLsBiPN6pp_TnK5XyE8GK3LKb51I&_nc_ht=scontent.fbri1-1.fna&oh=0eaec089ab74cc6e1cb8402d914d4d6f&oe=5E0DA0DE';
+    var date = entry.date;
+    var description = entry['rss:description']['#'];
+    const $ = cheerio.load(description);
+
+    var channelId= '344523238719619083';
+    
+    var img = $('img').attr('src');
+    $('post-thumbnail').remove();
+
+    var htmldescription = $.html()
+
+    var turndownService = new TurndownService()
+
+    turndownService.addRule('url', {
+      filter: function (node, options) {
+        return (
+          options.linkStyle === 'inlined' &&
+          node.nodeName === 'A' &&
+          node.getAttribute('href')
+        )
+      },
+      replacement: function (content, node) {
+        var href = node.getAttribute('href')
+        var title = node.title ? ' "' + node.title + '"' : ''
+        return '[' + content + '](' + href + title + ')'
+      }
+      
+    })
+    var descMarkdown = turndownService.turndown(htmldescription);
+
+    const articolo = new Discord.RichEmbed()
+      .setTitle(title)
+      .setAuthor(author)
+      .setImage(img)
+      .setThumbnail(logo)
+      .setURL(link)
+      .setDescription(descMarkdown)
+      .setTimestamp(date);
+
+      client.channels.get(channelId).send(articolo);
+
+
+  })
+})
+
+// Start watching the feed.
+watcher
+.start()
+.then(function (entries) {
+})
+.catch(function(error) {
+console.error(error)
+})
+
+// Stop watching the feed.
+//watcher.stop()
