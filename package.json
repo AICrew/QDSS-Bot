@@ -23,8 +23,6 @@
     "lodash": "^4.17.15",
     "lodash.merge": "^4.6.2",
     "marked": "^0.7.0",
-    "moment": "^2.24.0",
-    "moment-duration-format": "^2.3.2",
     "node-cron": "^2.0.3",
     "path": "^0.12.7",
     "popper.js": "^1.15.0",

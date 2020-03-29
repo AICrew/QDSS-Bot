@@ -1,7 +1,6 @@
 const Command = require("../../base/Command.js");
+const tools = require("../../base/tools.js")
 const { version } = require("discord.js");
-const moment = require("moment");
-require("moment-duration-format");
 
 
 /*************************************************************************************
@@ -20,11 +19,11 @@ class Stats extends Command {
     });
   }
 
-  async run(message, args, level) { // eslint-disable-line no-unused-vars
-    const duration = moment.duration(this.client.uptime).format(" D [days], H [hrs], m [mins], s [secs]");
+  async run(message, args, level)   // eslint-disable-line no-unused-vars
+  { 
     message.channel.send(`= STATISTICS =
   • Mem Usage  :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
-  • Uptime     :: ${duration}
+  • Uptime     :: ${tools.formatUptime(this.client.uptime)}
   • Users      :: ${this.client.users.size.toLocaleString()}
   • Servers    :: ${this.client.guilds.size.toLocaleString()}
   • Channels   :: ${this.client.channels.size.toLocaleString()}

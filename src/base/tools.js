@@ -36,6 +36,42 @@ module.exports = {
 			dateA.getMonth() === dateB.getMonth() &&
 			dateA.getYear() === dateB.getYear();
 	},
+
+
+	/** Get the current system time, formatted for logs decoration purposes
+	  * @return string containing the current time formatted as "YYYY-MM-DD HH:mm:ss"
+	*/
+    getTimestamp : function () 
+	{ 
+		let timestamp = new Date();
+
+		// UTC time doesn't take into account daylight savings time nor timezones, we alter
+		// the UTCHours value by adding the offset required to bring the value in our timezone
+		timestamp.setUTCHours(timestamp.getUTCHours() - timestamp.getTimezoneOffset() / 60);
+
+		// ISO-8601 format is specified as "YYYY-MM-DDTHH:mm:ss.sssZ"
+		return timestamp.toISOString().replace("T", " ").slice(0, -5);
+	},
+
+
+	/** Format the bot uptime value (provided in milliseconds) for printing
+	  * @return string containing the bot uptime formatted as "DD days, HH hrs, MM mins, SS secs"
+	*/
+    formatUptime : function (uptime) 
+	{ 
+		// Compute the number of days, hours, minutes and seconds of uptime
+		let days = Math.floor(uptime / (1000*60*60*24));
+		let hours = Math.floor(uptime / (1000*60*60)) % 24;
+		let minutes = Math.floor(uptime / (1000*60)) % 60;
+		let seconds = Math.floor(uptime / 1000) % 60;
+
+		// Build the result string
+		let result = `${days > 0 ? `${days} ${days == 1 ? 'day' : 'days'}, ` : ""}${hours > 0 || days > 0 ?
+			 `${hours} ${hours == 1 ? 'hr' : 'hrs'}, ` : ""}${minutes > 0 || hours > 0 || days > 0 ?
+			 `${minutes} ${minutes == 1 ? 'min' : 'mins'}, ` : ""}${seconds} ${seconds == 1 ? 'sec' : 'secs'}`;
+
+		return result;
+	},
 	
 	
 	/** Shuffles the elements of an array
