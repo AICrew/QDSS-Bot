@@ -34,9 +34,11 @@
             div#giocatori_filter{
                 display: none;
             }
+
             th{
                 color: white !important;
             }
+
             .table-secondary, .table-secondary > th, .table-secondary > td{
                 vertical-align: middle !important;
             }
@@ -102,8 +104,6 @@
                     <th></th>
                     <th></th>
                     <th></th>
-                    <th></th>
-                    <th></th>
                 </tr>
             </tfoot>
         </table>
@@ -111,167 +111,129 @@
 
 
     <script>
-        var users = <%- users %>;
+        var games = <%- games %>;
+        console.log(games)
         $(document).ready(function() {
 
-            var shuffle = function (array) {
-                    var currentIndex = array.length;
-                    var temporaryValue, randomIndex;
-                    // While there remain elements to shuffle...
-                    while (0 !== currentIndex) {
-                        // Pick a remaining element...
-                        randomIndex = Math.floor(Math.random() * currentIndex);
-                        currentIndex -= 1;
-
-                        // And swap it with the current element.
-                        temporaryValue = array[currentIndex];
-                        array[currentIndex] = array[randomIndex];
-                        array[randomIndex] = temporaryValue;
-                    }
-                    return array;
-            };
- 
-            var shuffledUsers = shuffle(users);
 
             var table = $('#giocatori').DataTable( {
-                    initComplete: function () {
-                        this.api().columns([3]).every( function () {
-                            var column = this;
-                            var select = $('</br><select><option value=""></option></select>')
-                                    .appendTo( $(column.header()) )
-                                        .on( 'change', function () {
-                                            var val = $.fn.dataTable.util.escapeRegex(
-                                                $(this).val()
-                                            );
-                                            column
-                                                .search( val ? '^'+val+'$' : '', true, false )
-                                                .draw();
-                                        } );
-                        
-                                    column.data().unique().sort().each( function ( d, j ) {
-                                        select.append( '<option value="'+d+'">'+d+'</option>' )
-                                    } );
-                        });
-                    },
-                    "createdRow": function(row, data, dataIndex, cells) {
-                        $(row).attr({class:"table-secondary"});
-                        var level = data.level;
-                        var levelxp = data.levelxp;
-                        var finalxp = (5 * Math.pow(level, 2)) + (50 * level) + 100;
-                        var value = Math.round((levelxp*100)/finalxp);
+                data: games,
+                "createdRow": function(row, data, dataIndex, cells) {
+                    $(row).attr({class:"table-secondary"});
+                    var cell = $('td', row).eq(1);
+                    cell.attr("data-toggle", "modal");
+                    cell.attr("data-target","#Modal-"+dataIndex);
+                    cell.attr({rel:"modal"});
+                    var elements = $();
+                    var list = data.iscritti;
+                    $.when(cell.append(
+                        `<div id='Modal-${dataIndex}' class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header" style="align:center">
+                                        <h4 >${data.nomeCompleto}</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="${data.logo}" width="150" heigth="150" style="padding:10px"><img>
+                                        <div style="padding: 10px;">
+                                            <hr style="height: 15px; width: 100%; margin: 0 auto;line-height:1px;background-color: white"; border:0 none; />
+                                            <div style="float:none; padding:10px">
+                                                <h4>Iscritti </h4>
+                                                <table align="center" style="float:none; width: 100%;">
+                                                    <thead>
 
-                        var cell = $('td', row).eq(1);
-                        cell.attr("data-toggle", "modal");
-                        cell.attr("data-target","#Modal-"+dataIndex);
-                        cell.attr({rel:"modal"});
-                        var elements = $();
-                        var list = data.giochi
-                        $.each(list, function(giochi, lista){
-                            elements = elements.add(`<tr id="p-${dataIndex}-gioco"><td>${lista.nomeCompleto}</td><td> ${lista.nickname}</td></tr>`);
-                            
-                        })
-                        $.when(cell.append(`<div id='Modal-${dataIndex}' class="modal fade" role="dialog">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header" style="align:center">
-                                                    <h4 >${data.tag}</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <img src="${data.avatar}" width="150" heigth="150" style="border-radius:50%;padding:10px"><img>
-                                                    <div style="padding: 10px;">
-                                                        <p>Reputazione: ${data.rep}</p>
-                                                        <p>Livello: ${data.level}</p>
-                                                        <p>Progresso Livello: ${value}% (${levelxp}XP)</p>
-                                                        <div class="progress">
-                                                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${levelxp}" aria-valuemin="0" aria-valuemax="${finalxp}" style="width:${value}%; color: black;background-color: #007bff;">
-                                                        </div>
-                                                    </div>
-                                                    <hr style="height: 15px; width: 100%; margin: 0 auto;line-height:1px;background-color: white"; border:0 none; />
-                                                    <div style="float:none; padding:10px">
-                                                        <h4>Liste Registrate </h4>
-                                                        <table align="center" style="float:none; width: 100%;">
-                                                            <tbody id="gioco-${dataIndex}" style="float:none;">
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                <!--</div>
-                                                <div class="modal-footer">
-                                                </div>-->
+                                                            <td></td>
+                                                            <td><b>Discord Tag</b></td>
+                                                            <td><b>Game Nickname</b></td>
+                                                            <td><b>Discord Status</b></td>
+                                                    </thead>
+                                                    <tbody id="gioco-${dataIndex}" style="float:none;">
+                                                    </tbody>
+                                                    <tfoot>
+                                                    </tfoot>
+                                                </table>
                                             </div>
                                         </div>
-                                    <div>`                                     
-                        )).then(
-                            function(){
-                                for (i = 0; i < elements.length; i++){
-                                    console.log(elements[i])
-                                    $('#gioco-'+dataIndex).append(elements[i]);
-                                }
-                            }
-                        )
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`                                     
+                    )).then(
+                        function(){
+                            $.each(list, function(giochi, lista){
+                                var status;
+                                if (lista.status == '1') status = '<img width="50" heigth="50" src="./img/green_dot.png"></img>';
+                                else if (lista.status == '4') status = '<img width="50" heigth="50" src="./img/grey_dot.png"></img>';
+                                else if (lista.status == '2') status = '<img width="50" heigth="50" src="./img/orange_dot.png"></img>';
+                                else if (lista.status == '3') status = '<img width="50" heigth="50" src="./img/red_dot.png"></img>';
+                                link = lista.avatar.replace("?size=2048", "?size=64");
+                                elements = elements.add(
+                                    `<tr id="p-${dataIndex}-gioco">
+                                        <td><img width="50" heigth="50" style="border-radius:50%" src="${link}"></img></td>
+                                        <td>${lista.nome}</td>
+                                        <td>${lista.nickname}</td>
+                                        <td>${status}</td>
 
+                                    </tr>`);
+                            })
+                            for (i = 0; i < elements.length; i++){
+                                $('#gioco-'+dataIndex).append(elements[i]);
+                            }
+                        }
+                    )
+                },
+                "dom": '<"top"i>rt<"bottom"flp><"clear">',
+                "bPaginate": false,
+                //"bFilter": false,
+                "order": [[ 1, "asc" ]],
+                 "columnDefs": [
+                    {
+                        "title": "Logo",
+                        "targets": [ 0 ],
+                        "data": "logo",
+                        "render": function ( data, type, row, meta ) {
+                            return '<img width="50" heigth="50" src="'+data+'"></img>';
+                        },
+                        "visible": true,
+                        "searchable": false,
+                        "orderable": false
                     },
-                    "dom": '<"top"i>rt<"bottom"flp><"clear">',
-                    data: shuffledUsers,
-                    //"bFilter": false,
-                    "order": [[ 4, "asc" ]],
-                    "columnDefs": [
-                        {
-                            "title": "Avatar",
-                            "targets": [ 0 ],
-                            "data": "avatar",
-                            "render": function ( data, type, row, meta ) {
-                                        return '<img width="50" heigth="50" style="border-radius:50%" src="'+data+'"></img>';
-                            },
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": false
-                        },
-                        {
-                            "title": "Tag",
-                            "targets": [ 1 ],
-                            "data": "tag",
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": false,
-                        },
-                        {
-                                "title": "Nickname",
-                                "targets": [ 2 ],
-                                "data": "nickname",
-                                "visible": true,
-                                "searchable": false,
-                                "orderable": false
-                        },
-                        {
-                                "title": "Gioco",
-                                "targets": [ 3 ],
-                                "data": "gioco",
-                                "visible": true,
-                                "searchable": true,
-                                "orderable": false
-                        },
-                        {
-                                "title": "Status",
-                                "targets": [ 4 ],
-                                "data": "status",
-                                "render": function ( data, type, row, meta ) {
-                                    if ( type === "display" ){
-                                        if (data == '1') return '<img width="50" heigth="50" src="./img/green_dot.png"></img>';
-                                        else if (data == '4') return '<img width="50" heigth="50" src="./img/grey_dot.png"></img>';
-                                        else if (data == '2') return '<img width="50" heigth="50" src="./img/orange_dot.png"></img>';
-                                        else if (data == '3') return '<img width="50" heigth="50" src="./img/red_dot.png"></img>';
-                                        return data;
-                                    }
-                                    return data;
-                                },
-                                "visible": true,
-                                "searchable": false,
-                                "orderable": true
-                        },
-                    ]
+                    {
+                        "title": "Gioco",
+                        "targets": [ 1 ],
+                        "data": "nomeCompleto",
+                        "visible": true,
+                        "searchable": true,
+                        "orderable": false,
+                    },
+                    {
+                        "title": "Iscritti",
+                        "targets": [ 2 ],
+                        "data": "iscritti.length",
+                        "visible": true,
+                        "searchable": false,
+                        "orderable": true,
+                    }
+                ]
             } );
             $('#giocatori').removeClass( 'display' ).addClass('table table-hover');
 
+            table.columns([1]).every( function () {
+                var column = this;
+                var title = $(this).text();
+                var search = $('</br><input type="text" placeholder="Search '+title+'" />')
+                    .appendTo( $(column.header()))
+                    .on( 'keyup change clear', function () {
+                        if ( column.search() !== this.value ) {
+                            column
+                                .search( this.value )
+                                .draw();
+                        }
+                } );
+            } );
+            
+
+        
         })
 
     </script>

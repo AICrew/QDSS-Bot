@@ -11,6 +11,7 @@ const sqlite3 = require('sqlite3').verbose();
 const DB = new sqlite3.Database(dbFile);
 const Discord = require("discord.js");
 
+
 class QdssDashboard extends Discord.Client {
     constructor(options) {
       super(options);
@@ -26,8 +27,7 @@ const client = new QdssDashboard();
 client.login(client.config.token);
 
 //User
-/*var user = express.Router();
-const User = {
+/*const User = {
   username: process.env.USER,
   password: process.env.UserPassword,
   maxAge: 86400000 // 1 day
@@ -36,57 +36,115 @@ user.use(passwordProtected(User))*/
 
 user.get("/giocatori", (req, res) => {
   const db = QDSS_DB.Open();
-    db.allAsync("SELECT * FROM Giochi G, Registrazioni R, Utenti U, Esperienza E WHERE G.nome = R.game AND U.userId = R.userId AND E.userId = R.userId").then( async (rows) => {
-      if (rows !== undefined && rows.length > 0) {
-        const gameName = rows[0].nomeCompleto;
-        const color = rows[0].colore;
-        const logo = rows[0].logo;
-        const users = new Array();
-        for (let i = 0; i < rows.length; i++){
-          var userId = rows[i].userId
 
-          var user = await client.fetchUser(userId, true).catch((err) => console.log('User: '+err));
+  db.allAsync("SELECT * FROM Giochi G").then( async (games) => {
+    if (games === undefined || games.length == 0)
+      return;
 
-          var row = await db.getAsync("SELECT SUM(deltaRep) AS rep FROM Reputazione R WHERE R.userTo = ? GROUP BY R.userTo",[userId]).catch((err) => console.log('Rep: '+err));
+    const giochi = new Array();
 
-          var giochi = await db.allAsync("SELECT nomeCompleto, nickname FROM Registrazioni R, Giochi G WHERE R.game = G.nome AND userId = ? ORDER BY nomeCompleto ASC", [userId]).catch((err) => console.log('Giochi: '+err));
+    // Per ogni gioco nel database, recupera la lista degli iscritti e costruisci
+    // un oggetto con le relative informazioni, da passare alla dashboard
+    for (let i = 0; i < games.length; i++) {
+      let gioco = {                             // Oggetto 'gioco'
+        nome: games[i].nome,
+        nomeCompleto: games[i].nomeCompleto,
+        logo: games[i].logo,
+        iscritti: new Array()
+      };
+      
+      await db.allAsync("SELECT * FROM Giochi G, Registrazioni R, Utenti U " +
+        "WHERE G.nome = R.game AND U.userId = R.userId AND R.game = ?", [gioco.nome])
+      .then( async (users) => 
+      {
+        if (users === undefined && users.length == 0) 
+          return;
 
-          var u = await new Promise(function getUser(resolve){
+        // Processa l'elenco di iscritti alla lista del gioco, recuperandone le informazioni
+        for (let i = 0; i < users.length; i++) {
+          var userId = users[i].userId;
+          var user = await client.fetchUser(userId, true).catch((err) => console.log(`User: ${err}`));
+
+          var iscritto = await new Promise(function getUser(resolve){
             if (!user) return;
             else {
-              var s;
-              if (user.presence.status == 'online') var s = "1";
-              else if (user.presence.status == 'idle') var s = "2";
-              else if (user.presence.status == 'dnd') var s = "3";
-              else if (user.presence.status == 'offline') var s = "4";
+              let iscritto = {        // Oggetto 'iscritto'
+                nome: user.tag,
+                nickname: users[i].nickname,
+                avatar: user.avatarURL ? user.avatarURL : "http://aicrew.it/qdss/img/icon_discord.png",
+                status: "0"
+              };
 
-              var a;
-              if (user.avatarURL) var a = user.avatarURL;
-              else var a = "http://aicrew.it/qdss/img/icon_discord.png";
-
-              var t = user.tag;
-
-              var r;
-              if (!row) var r = 0;
-              else var r = row.rep;
-
-              var u = [s, a, t, r];
+              if (user.presence.status == 'online') iscritto.status = "1";
+              else if (user.presence.status == 'idle') iscritto.status = "2";
+              else if (user.presence.status == 'dnd') iscritto.status = "3";
+              else if (user.presence.status == 'offline') iscritto.status = "4";
               
-              resolve(u);
+              resolve(iscritto);
             }
-          })
-          var stat = u[0];
-          var avat = u[1];
-          var ta = u[2];
-          var re = u[3];
+          });
 
-          users.push({tag: ta, nickname: rows[i].nickname, gioco: rows[i].nomeCompleto, avatar: avat, status: stat, level: rows[i].level, totalxp: rows[i].totalxp, levelxp: rows[i].levelxp, rep: re, giochi: giochi});
-
+          // Aggiungi l'utente all'array di iscritti al gioco corrente
+          gioco.iscritti.push(iscritto);
         }
-        usersParsed = JSON.stringify(users);
-        res.render('giocatori', {users: usersParsed, path: req.path});
+      });
+      
+      // Aggiungi il gioco corrente all'array che verrà usato per costruire la tabella
+      giochi.push(gioco);
+    }
+
+    const gamesParsed = JSON.stringify(giochi);
+    res.render('giocatori', {games: gamesParsed, path: req.path});
+  })
+
+  /*  db.allAsync("SELECT * FROM Giochi G, Registrazioni R, Utenti U, Esperienza E WHERE G.nome = R.game AND U.userId = R.userId AND E.userId = R.userId").then( async (rows) => {
+    if (rows !== undefined && rows.length > 0) {
+      const users = new Array();
+      for (let i = 0; i < rows.length; i++){
+        var userId = rows[i].userId
+
+        var user = await client.fetchUser(userId, true).catch((err) => console.log('User: '+err));
+
+        var row = await db.getAsync("SELECT SUM(deltaRep) AS rep FROM Reputazione R WHERE R.userTo = ? GROUP BY R.userTo",[userId]).catch((err) => console.log('Rep: '+err));
+
+        var giochi = await db.allAsync("SELECT nomeCompleto, nickname FROM Registrazioni R, Giochi G WHERE R.game = G.nome AND userId = ? ORDER BY nomeCompleto ASC", [userId]).catch((err) => console.log('Giochi: '+err));
+
+        var u = await new Promise(function getUser(resolve){
+          if (!user) return;
+          else {
+            var s;
+            if (user.presence.status == 'online') var s = "1";
+            else if (user.presence.status == 'idle') var s = "2";
+            else if (user.presence.status == 'dnd') var s = "3";
+            else if (user.presence.status == 'offline') var s = "4";
+
+            var a;
+            if (user.avatarURL) var a = user.avatarURL;
+            else var a = "http://aicrew.it/qdss/img/icon_discord.png";
+
+            var t = user.tag;
+
+            var r;
+            if (!row) var r = 0;
+            else var r = row.rep;
+
+            var u = [s, a, t, r];
+            
+            resolve(u);
+          }
+        })
+        var stat = u[0];
+        var avat = u[1];
+        var ta = u[2];
+        var re = u[3];
+
+        users.push({tag: ta, nickname: rows[i].nickname, gioco: rows[i].nomeCompleto, avatar: avat, status: stat, level: rows[i].level, totalxp: rows[i].totalxp, levelxp: rows[i].levelxp, rep: re, giochi: giochi});
+
       }
-    })
+      usersParsed = JSON.stringify(users);
+      res.render('giocatori', {users: usersParsed, path: req.path});
+    }
+  })*/
 });
 
 user.post('/giocatori', (req, res, next) => {
