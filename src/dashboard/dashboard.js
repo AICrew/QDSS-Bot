@@ -1,11 +1,5 @@
 const dotenv = require('dotenv');
 dotenv.config({path: './../.env'});
-//database
-const fs = require('fs');
-const dbFile = './../database/sqlite.db';
-const exists = fs.existsSync(dbFile);
-const QDSS_DB = require('./dashboard-sqlite.js');
-const sqlite3 = require('sqlite3').verbose();
 const url = require("url");
 const path = require("path");
 const Discord = require("discord.js");
@@ -27,7 +21,7 @@ const client = new QdssDashboard();
 client.login(client.config.token);
 client.on('ready', () => {console.log("dashboard ready")})
 
-//create a server object:
+// Create a server object:
 const express = require('express');
 const app = express();
 const session = require('express-session');
@@ -58,7 +52,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 var os = require('os');
 console.log(os.cpus());
 
-//Homepage
+// Homepage
 app.get('/', (req, res) => {
   res.render('homepage', {path: req.path});
 });

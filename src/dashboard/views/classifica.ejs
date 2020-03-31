@@ -84,95 +84,97 @@
 
     </body>
     <script>
-            var users = <%- users %>;
+        var users = <%- users %>;
 
-            $(document).ready(function() {
+        $(document).ready(function() {
 
-                var table = $('#classifica').DataTable( {
-                    data: users,
-                    "createdRow": function(row, data, dataIndex) {
-                        $(row).attr({class:"table-secondary"});
+            var table = $('#classifica').DataTable( {
+                data: users,
+                "createdRow": function(row, data, dataIndex) {
+                    $(row).attr({class:"table-secondary"});
+                },
+                "dom": '<"top"i>rt<"bottom"flp><"clear">',
+                "order": [[ 3, "desc" ]],
+                "columnDefs": [
+                    {
+                        "title": "Avatar",
+                        "targets": [ 0 ],
+                        "data": "avatar",
+                        "render": function ( data, type, row, meta ) {
+                            link = data.replace("?size=2048", "?size=64");
+                            return `<img width="50" heigth="50" style="border-radius:50%" src="${link}"></img>`;
+                        },
+                        "visible": true,
+                        "searchable": false,
+                        "orderable": false
                     },
-                    "dom": '<"top"i>rt<"bottom"flp><"clear">',
-                    "order": [[ 3, "desc" ]],
-                    "columnDefs": [
-                        {
-                            "title": "Avatar",
-                            "targets": [ 0 ],
-                            "data": "avatar",
-                            "render": function ( data, type, row, meta ) {
-                                return '<img width="50" heigth="50" style="border-radius:50%" src="'+data+'"></img>';
-                            },
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": false
+                    {
+                        "title": " Discord Tag",
+                        "targets": [ 1 ],
+                        "data": "tag",
+                        "visible": true,
+                        "searchable": true,
+                        "orderable": false
+                    },
+                    {
+                        "title": "Livello",
+                        "targets": [ 2 ],
+                        "data": "level",
+                        "visible": true,
+                        "searchable": false,
+                        "orderable": true
+                    },
+                    {
+                        "title": "Reputazione",
+                        "targets": [ 5 ],
+                        "data": "rep",
+                        "visible": true,
+                        "searchable": false,
+                        "orderable": true
+                    },
+                    {
+                        "title": "XP Totale",
+                        "targets": [ 3 ],
+                        "data": "totalxp",
+                        "visible": true,
+                        "searchable": false,
+                        "orderable": true
+                    },
+                    {
+                        "title": "Progresso Livello",
+                        "targets": [ 4 ],
+                        "data": "levelxp",
+                        "render": function ( data, type, row, meta ) {
+                            var level = row.level;
+                            var levelxp = row.levelxp
+                            var finalxp = (5 * Math.pow(level, 2)) + (50 * level) + 100 ;
+                            var value = Math.round((levelxp * 100) / finalxp);
+                            return `${value}% (${levelxp} XP)</br><div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${levelxp}" aria-valuemin="0" aria-valuemax="${finalxp}" style="width:${value}%; color: black;background-color: #007bff;"></div></div>`;
                         },
-                        {
-                            "title": " Discord Tag",
-                            "targets": [ 1 ],
-                            "data": "tag",
-                            "visible": true,
-                            "searchable": true,
-                            "orderable": false
-                        },
-                        {
-                            "title": "Livello",
-                            "targets": [ 2 ],
-                            "data": "level",
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": true
-                        },
-                        {
-                            "title": "Reputazione",
-                            "targets": [ 5 ],
-                            "data": "rep",
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": true
-                        },
-                        {
-                            "title": "XP Totale",
-                            "targets": [ 3 ],
-                            "data": "totalxp",
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": true
-                        },
-                        {
-                            "title": "Progresso Livello",
-                            "targets": [ 4 ],
-                            "data": "levelxp",
-                            "render": function ( data, type, row, meta ) {
-                                var level = row.level;
-                                var levelxp = row.levelxp
-                                var finalxp = (5 * Math.pow(level, 2)) + (50 * level) + 100 ;
-                                var value = Math.round((levelxp*100)/finalxp);
-                                return value +'% ('+ levelxp +' XP)</br><div class="progress"><div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="'+levelxp+'" aria-valuemin="0" aria-valuemax="'+finalxp+'" style="width:'+ value +'%; color: black;background-color: #007bff;"></div></div>';
-                            },
-                            "visible": true,
-                            "searchable": false,
-                            "orderable": true
-                        }
+                        "visible": true,
+                        "searchable": false,
+                        "orderable": true
+                    }
 
-                    ]
-                } );
-
-                $('#classifica').removeClass( 'display' ).addClass('table table-hover');
-
-                table.columns([1]).every( function () {
-                        var column = this;
-                        var title = $(this).text();
-                        var search = $('</br><input type="text" placeholder="Search '+title+'" />')
-                                .appendTo( $(column.header()))
-                                .on( 'keyup change clear', function () {
-                                        if ( column.search() !== this.value ) {
-                                            column
-                                                .search( this.value )
-                                                .draw();
-                                        }
-                                } );
-                } );
+                ]
             } );
-        </script>
+
+            $('#classifica').removeClass( 'display' ).addClass('table table-hover');
+
+            table.columns([1]).every( function () {
+                var column = this;
+                var title = $(this).text();
+                var search = $(`</br><input type="text" placeholder="Search ${title}" />`)
+                    .appendTo( $(column.header()))
+                    .on( 'keyup change clear', function () {
+                        if ( column.search() !== this.value ) {
+                            column
+                                .search( this.value )
+                                .draw();
+                        }
+                    } );
+            } );
+        } );
+        
+    </script>
 <html>

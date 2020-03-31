@@ -112,9 +112,7 @@
 
     <script>
         var games = <%- games %>;
-        console.log(games)
         $(document).ready(function() {
-
 
             var table = $('#giocatori').DataTable( {
                 data: games,
@@ -141,11 +139,10 @@
                                                 <h4>Iscritti </h4>
                                                 <table align="center" style="float:none; width: 100%;">
                                                     <thead>
-
-                                                            <td></td>
-                                                            <td><b>Discord Tag</b></td>
-                                                            <td><b>Game Nickname</b></td>
-                                                            <td><b>Discord Status</b></td>
+                                                        <td></td>
+                                                        <td><b>Discord Tag</b></td>
+                                                        <td><b>Game Nickname</b></td>
+                                                        <td><b>Discord Status</b></td>
                                                     </thead>
                                                     <tbody id="gioco-${dataIndex}" style="float:none;">
                                                     </tbody>
@@ -158,29 +155,26 @@
                                 </div>
                             </div>
                         </div>`                                     
-                    )).then(
-                        function(){
-                            $.each(list, function(giochi, lista){
-                                var status;
-                                if (lista.status == '1') status = '<img width="50" heigth="50" src="./img/green_dot.png"></img>';
-                                else if (lista.status == '4') status = '<img width="50" heigth="50" src="./img/grey_dot.png"></img>';
-                                else if (lista.status == '2') status = '<img width="50" heigth="50" src="./img/orange_dot.png"></img>';
-                                else if (lista.status == '3') status = '<img width="50" heigth="50" src="./img/red_dot.png"></img>';
-                                link = lista.avatar.replace("?size=2048", "?size=64");
-                                elements = elements.add(
-                                    `<tr id="p-${dataIndex}-gioco">
-                                        <td><img width="50" heigth="50" style="border-radius:50%" src="${link}"></img></td>
-                                        <td>${lista.nome}</td>
-                                        <td>${lista.nickname}</td>
-                                        <td>${status}</td>
-
-                                    </tr>`);
-                            })
-                            for (i = 0; i < elements.length; i++){
-                                $('#gioco-'+dataIndex).append(elements[i]);
-                            }
+                    )).then( function() {
+                        $.each(list, function(giochi, lista) {
+                            var status;
+                            if (lista.status == 1) status = '<img width="50" heigth="50" src="./img/green_dot.png"></img>';
+                            else if (lista.status == 4) status = '<img width="50" heigth="50" src="./img/grey_dot.png"></img>';
+                            else if (lista.status == 2) status = '<img width="50" heigth="50" src="./img/orange_dot.png"></img>';
+                            else if (lista.status == 3) status = '<img width="50" heigth="50" src="./img/red_dot.png"></img>';
+                            link = lista.avatar.replace("?size=2048", "?size=64");
+                            elements = elements.add(
+                                `<tr id="p-${dataIndex}-gioco">
+                                    <td><img width="50" heigth="50" style="border-radius:50%" src="${link}"></img></td>
+                                    <td>${lista.nome}</td>
+                                    <td>${lista.nickname}</td>
+                                    <td>${status}</td>
+                                </tr>`);
+                        })
+                        for (i = 0; i < elements.length; i++) {
+                            $('#gioco-'+dataIndex).append(elements[i]);
                         }
-                    )
+                    })
                 },
                 "dom": '<"top"i>rt<"bottom"flp><"clear">',
                 "bPaginate": false,
@@ -192,7 +186,7 @@
                         "targets": [ 0 ],
                         "data": "logo",
                         "render": function ( data, type, row, meta ) {
-                            return '<img width="50" heigth="50" src="'+data+'"></img>';
+                            return `<img width="50" heigth="50" src="${data}"></img>`;
                         },
                         "visible": true,
                         "searchable": false,
@@ -216,12 +210,13 @@
                     }
                 ]
             } );
+
             $('#giocatori').removeClass( 'display' ).addClass('table table-hover');
 
             table.columns([1]).every( function () {
                 var column = this;
                 var title = $(this).text();
-                var search = $('</br><input type="text" placeholder="Search '+title+'" />')
+                var search = $(`</br><input type="text" placeholder="Search ${title}" />`)
                     .appendTo( $(column.header()))
                     .on( 'keyup change clear', function () {
                         if ( column.search() !== this.value ) {
@@ -229,12 +224,9 @@
                                 .search( this.value )
                                 .draw();
                         }
-                } );
+                    } );
             } );
-            
-
-        
-        })
+        } );
 
     </script>
 <html>
