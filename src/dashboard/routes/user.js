@@ -29,7 +29,7 @@ client.login(client.config.token);
 };
 user.use(passwordProtected(User))*/
 
-user.get("/giocatori", (req, res) => {
+user.get("/giocatori", async (req, res) => {
   const db = QDSS_DB.Open();
 
   // Ottieni dal database l'elenco dei giochi supportati e costruisci la relativa
@@ -52,7 +52,7 @@ user.get("/giocatori", (req, res) => {
   });
 
   // Leggi dal database tutte le registrazioni e le relative informazioni dell'utente
-  await db.allAsync("SELECT * FROM Registrazioni R, Utenti U AND U.userId = R.userId").then( async (users) => {
+  await db.allAsync("SELECT * FROM Registrazioni R, Utenti U WHERE U.userId = R.userId").then( async (users) => {
     if (users === undefined && users.length == 0) 
       return;
 
@@ -82,68 +82,14 @@ user.get("/giocatori", (req, res) => {
     }
   });
 
-  const gamesParsed = JSON.stringify(giochi);
+  const gamesParsed = JSON.stringify(Array.from(giochi.values()));
   res.render('giocatori', {games: gamesParsed, path: req.path});
-
-  /*
-  // Per ogni gioco nel database, recupera la lista degli iscritti e costruisci
-  // un oggetto con le relative informazioni, da passare alla dashboard
-  for (let i = 0; i < games.length; i++) {
-    let gioco = {                             // Oggetto 'gioco'
-      nome: games[i].nome,
-      nomeCompleto: games[i].nomeCompleto,
-      logo: games[i].logo,
-      iscritti: new Array()
-    };
-    
-    await db.allAsync("SELECT * FROM Giochi G, Registrazioni R, Utenti U " +
-      "WHERE G.nome = R.game AND U.userId = R.userId AND R.game = ?", [gioco.nome])
-    .then( async (users) => 
-    {
-      if (users === undefined && users.length == 0) 
-        return;
-
-      // Processa l'elenco di iscritti alla lista del gioco, recuperandone le informazioni
-      for (let i = 0; i < users.length; i++) {
-        var userId = users[i].userId;
-        var user = await client.fetchUser(userId, true).catch((err) => console.log(`User: ${err}`));
-
-        var iscritto = await new Promise(function getUser(resolve){
-          if (!user) return;
-          else {
-            let iscritto = {        // Oggetto 'iscritto'
-              nome: user.tag,
-              nickname: users[i].nickname,
-              avatar: user.avatarURL ? user.avatarURL : "http://aicrew.it/qdss/img/icon_discord.png",
-              status: "0"
-            };
-
-            if (user.presence.status == 'online') iscritto.status = "1";
-            else if (user.presence.status == 'idle') iscritto.status = "2";
-            else if (user.presence.status == 'dnd') iscritto.status = "3";
-            else if (user.presence.status == 'offline') iscritto.status = "4";
-            
-            resolve(iscritto);
-          }
-        });
-
-        // Aggiungi l'utente all'array di iscritti al gioco corrente
-        gioco.iscritti.push(iscritto);
-      }
-    });
-    
-    // Aggiungi il gioco corrente all'array che verrà usato per costruire la tabella
-    giochi.push(gioco);
-  }
-
-  const gamesParsed = JSON.stringify(giochi);
-  res.render('giocatori', {games: gamesParsed, path: req.path});
-  */
 });
 
 user.post('/giocatori', (req, res, next) => {
     res.redirect('/qdss/giocatori'); 
 });
+
 
 user.get("/classifica", (req, res) => {
   const db = QDSS_DB.Open();
