@@ -1,8 +1,7 @@
 const Command = require("../../base/Command.js");
 const tools = require("../../base/tools.js");
 const Discord = require("discord.js");
-
-const YOUTUBE_API_KEY = "AIzaSyDKDvCTCOM1FQkdUjfX94fRRgQvTYUDiw4";
+const dotenv = require('dotenv').config({path: '../../.env'});
 
 const QDSS_CHANNEL_COLOR = 0x3498DB;
 const QDSS2_CHANNEL_COLOR = 0xFFBF00;
@@ -47,7 +46,7 @@ class Ricerca extends Command {
 		
 			options = {
 				maxResults: 3,
-				key: YOUTUBE_API_KEY,
+				key: process.env.YOUTUBE_API_KEY,
 				channelId: "UC_eA572lBzVkpXhoeWnqSKQ",
 				order: "date",
 				q: keywords
@@ -61,7 +60,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: YOUTUBE_API_KEY,
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC5GSO2hiHevgZUhSQIJNd2A",
 			  order: "date",
 			  q: keywords
@@ -75,7 +74,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: YOUTUBE_API_KEY,
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC7mru_iFtYCoDilRi3OvqmQ",
 			  order: "date",
 			  q: keywords
@@ -89,7 +88,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: YOUTUBE_API_KEY,
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCmVlQTe0PeiNNHD-wAeC8vQ",
 			  order: "date",
 			  q: keywords
@@ -103,7 +102,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: YOUTUBE_API_KEY,
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC3J04ZxHo2aRYJPl1tyWKMA",
 			  order: "date",
 			  q: keywords
@@ -117,7 +116,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: YOUTUBE_API_KEY,
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCDy4cREE4oBF7EhoW0wnS-g",
 			  order: "date",
 			  q: keywords
@@ -131,7 +130,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: YOUTUBE_API_KEY,
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCYFgn8_JgaQL1E-N2tg1xcQ",
 			  order: "date",
 			  q: keywords
