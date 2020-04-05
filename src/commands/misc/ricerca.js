@@ -15,11 +15,11 @@ const QDSSIT_WEBSITE_COLOR = 0x11C8D5;
 
 
 /*********************************************************************************
-* Gestore d'interfaccia per la ricerca sui numerosi canali YouTube di QDSS			 *
-* e sul sito web QDSS.it																												 *
+* Gestore d'interfaccia per la ricerca sui numerosi canali YouTube di QDSS		 *
+* e sul sito web QDSS.it														 *
 * - Utilizza le API youtube-search e wpapi (Wordpress) per ottenere i risultati  *
-*		della ricerca in formato JSON												 												 *
-*																				 																				 *
+*		della ricerca in formato JSON											 *
+*																				 *
 *********************************************************************************/
 
 class Ricerca extends Command {
