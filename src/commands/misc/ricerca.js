@@ -2,6 +2,8 @@ const Command = require("../../base/Command.js");
 const tools = require("../../base/tools.js");
 const Discord = require("discord.js");
 
+const YOUTUBE_API_KEY = "AIzaSyDKDvCTCOM1FQkdUjfX94fRRgQvTYUDiw4";
+
 const QDSS_CHANNEL_COLOR = 0x3498DB;
 const QDSS2_CHANNEL_COLOR = 0xFFBF00;
 const QDSSTRASH_CHANNEL_COLOR = 0x6A0888;
@@ -45,7 +47,7 @@ class Ricerca extends Command {
 		
 			options = {
 				maxResults: 3,
-				key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+				key: YOUTUBE_API_KEY,
 				channelId: "UC_eA572lBzVkpXhoeWnqSKQ",
 				order: "date",
 				q: keywords
@@ -59,7 +61,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: YOUTUBE_API_KEY,
 			  channelId: "UC5GSO2hiHevgZUhSQIJNd2A",
 			  order: "date",
 			  q: keywords
@@ -73,7 +75,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: YOUTUBE_API_KEY,
 			  channelId: "UC7mru_iFtYCoDilRi3OvqmQ",
 			  order: "date",
 			  q: keywords
@@ -87,7 +89,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: YOUTUBE_API_KEY,
 			  channelId: "UCmVlQTe0PeiNNHD-wAeC8vQ",
 			  order: "date",
 			  q: keywords
@@ -101,7 +103,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: YOUTUBE_API_KEY,
 			  channelId: "UC3J04ZxHo2aRYJPl1tyWKMA",
 			  order: "date",
 			  q: keywords
@@ -115,7 +117,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: YOUTUBE_API_KEY,
 			  channelId: "UCDy4cREE4oBF7EhoW0wnS-g",
 			  order: "date",
 			  q: keywords
@@ -129,7 +131,7 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: YOUTUBE_API_KEY,
 			  channelId: "UCYFgn8_JgaQL1E-N2tg1xcQ",
 			  order: "date",
 			  q: keywords
@@ -191,7 +193,7 @@ function youtubeSearch(keywords, options, embedColor, responseChannel)
 				.setColor(embedColor)
 				.setDescription("0 risultati");
 			
-			  return responseChannel.send(noResults);
+			  responseChannel.send(noResults);
 			}
 		}
   });
@@ -207,7 +209,8 @@ function wordpressSearch(keywords, embedColor, responseChannel)
 {
 	const WPAPI = require("wpapi");
 	const wp = new WPAPI({ endpoint: "https://www.qdss.it/wp-json" });
-	const msg = "Ricerca di **" + keywords + "** in corso...";
+	const msg = keywords ? "Ricerca di **" + keywords + "** in corso..." 
+		: "Ricerca degli ultimi articoli in corso...";
 	
 	responseChannel.send(msg).then(async (msg) => {
 		wp.posts().search(keywords).get(async function(err, results)
@@ -256,13 +259,13 @@ function wordpressSearch(keywords, embedColor, responseChannel)
 					.setColor(embedColor)
 					.setDescription("0 risultati");
 
-				  return responseChannel.send(embed);
+				  responseChannel.send(noResults);
 				}
 			}
 			
-			return msg.delete();	// Eliminazione del messaggio "Ricerca in corso..."
-    });
-  });
+			msg.delete();	// Eliminazione del messaggio "Ricerca in corso..."
+    	});
+  	});
 }
 
 module.exports = Ricerca;
