@@ -48,7 +48,7 @@ class Ricerca extends Command {
 				maxResults: 3,
 				key: process.env.YOUTUBE_API_KEY,
 				channelId: "UC_eA572lBzVkpXhoeWnqSKQ",
-				order: "date",
+				order: "relevance",
 				q: keywords
 			};
 			
@@ -62,7 +62,7 @@ class Ricerca extends Command {
 			  maxResults: 3,
 			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC5GSO2hiHevgZUhSQIJNd2A",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -76,7 +76,7 @@ class Ricerca extends Command {
 			  maxResults: 3,
 			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC7mru_iFtYCoDilRi3OvqmQ",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -90,7 +90,7 @@ class Ricerca extends Command {
 			  maxResults: 3,
 			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCmVlQTe0PeiNNHD-wAeC8vQ",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -104,7 +104,7 @@ class Ricerca extends Command {
 			  maxResults: 3,
 			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC3J04ZxHo2aRYJPl1tyWKMA",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -118,7 +118,7 @@ class Ricerca extends Command {
 			  maxResults: 3,
 			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCDy4cREE4oBF7EhoW0wnS-g",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -132,7 +132,7 @@ class Ricerca extends Command {
 			  maxResults: 3,
 			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCYFgn8_JgaQL1E-N2tg1xcQ",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
