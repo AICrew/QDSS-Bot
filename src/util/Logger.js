@@ -2,11 +2,11 @@
 Logger class for easy and aesthetically pleasing console logging
 */
 const chalk = require("chalk");
-const moment = require("moment");
+const tools = require("../base/tools.js")
 
 class Logger {
   static log(content, type = "log") {
-    const timestamp = `[${moment().format("YYYY-MM-DD HH:mm:ss")}]:`;
+    const timestamp = `[${tools.getTimestamp()}]:`;
     switch (type) {
       case "log": {
         return console.log(`${timestamp} ${chalk.bgBlue(type.toUpperCase())} ${content} `);

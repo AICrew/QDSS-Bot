@@ -39,14 +39,14 @@ class Giochi extends Command {
 			for (let n = 0, i = 0; i < rows.length; n++)
 			{
 				// Creazione della lista di stringhe da inviare nella risposta
-				let l_games = "", l_shortenings = "";
+				let l_items = "\n";
 				for (; i < rows.length; i++)
 				{
-				  if (l_games.length + rows[i].nomeCompleto.length < 1020 &&
-							l_shortenings.length + rows[i].nome.length < 1020)		// Limite di max 1024 caratteri per field
-				  {	
-						l_games += rows[i].nomeCompleto + " \n";							
-						l_shortenings += "`" + rows[i].nome + "`\n";
+				  if (l_items.length + 20 + rows[i].nomeCompleto.length < 1020)		// Limite di max 1024 caratteri per field
+				  {
+					  l_items += "`[" + rows[i].nome + "]";
+					  l_items += " ".repeat(12 - rows[i].nome.length);		// Lunghezza massima abbreviazione: 12 caratteri
+					  l_items += "` " + rows[i].nomeCompleto + "\n";							
 				  }
 				  else break;
 				}
@@ -54,8 +54,7 @@ class Giochi extends Command {
 				// Creazione dell'array di pagine (RichEmbed)
 				const embed = new Discord.RichEmbed()
 				  .setColor(0x11C8D5)
-				  .addField("Giochi supportati:", l_games, true)
-				  .addField("Abbreviazione comando:", l_shortenings, true);
+				  .addField("`[nome comando]` Giochi supportati: ", l_items, true);
 
 				pages.push(embed);
 			}

@@ -3,8 +3,8 @@ const QDSS_DB = require("../../util/qdss-sqlite.js");
 
 
 /****************************************************************************************
-*  Rimuove un utente dalla lista dei giocatori a cui si era registrato in precedenza		*
-*																																												*
+*  Rimuove un utente dalla lista dei giocatori a cui si era registrato in precedenza	*
+*																						*
 ****************************************************************************************/
 
 class Abbandona extends Command {

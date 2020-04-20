@@ -1,6 +1,7 @@
 const Command = require("../../base/Command.js");
 const tools = require("../../base/tools.js");
 const Discord = require("discord.js");
+const dotenv = require('dotenv').config({path: '../../.env'});
 
 const QDSS_CHANNEL_COLOR = 0x3498DB;
 const QDSS2_CHANNEL_COLOR = 0xFFBF00;
@@ -13,11 +14,11 @@ const QDSSIT_WEBSITE_COLOR = 0x11C8D5;
 
 
 /*********************************************************************************
-* Gestore d'interfaccia per la ricerca sui numerosi canali YouTube di QDSS			 *
-* e sul sito web QDSS.it																												 *
+* Gestore d'interfaccia per la ricerca sui numerosi canali YouTube di QDSS		 *
+* e sul sito web QDSS.it														 *
 * - Utilizza le API youtube-search e wpapi (Wordpress) per ottenere i risultati  *
-*		della ricerca in formato JSON												 												 *
-*																				 																				 *
+*		della ricerca in formato JSON											 *
+*																				 *
 *********************************************************************************/
 
 class Ricerca extends Command {
@@ -45,9 +46,9 @@ class Ricerca extends Command {
 		
 			options = {
 				maxResults: 3,
-				key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+				key: process.env.YOUTUBE_API_KEY,
 				channelId: "UC_eA572lBzVkpXhoeWnqSKQ",
-				order: "date",
+				order: "relevance",
 				q: keywords
 			};
 			
@@ -59,9 +60,9 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC5GSO2hiHevgZUhSQIJNd2A",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -73,9 +74,9 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC7mru_iFtYCoDilRi3OvqmQ",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -87,9 +88,9 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCmVlQTe0PeiNNHD-wAeC8vQ",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -101,9 +102,9 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UC3J04ZxHo2aRYJPl1tyWKMA",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -115,9 +116,9 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCDy4cREE4oBF7EhoW0wnS-g",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -129,9 +130,9 @@ class Ricerca extends Command {
 		
 			options = {
 			  maxResults: 3,
-			  key: "AIzaSyA4_LJCCeIxuEmLJj0wFxQBHKntrKHniCo",
+			  key: process.env.YOUTUBE_API_KEY,
 			  channelId: "UCYFgn8_JgaQL1E-N2tg1xcQ",
-			  order: "date",
+			  order: "relevance",
 			  q: keywords
 			};
 			
@@ -191,7 +192,7 @@ function youtubeSearch(keywords, options, embedColor, responseChannel)
 				.setColor(embedColor)
 				.setDescription("0 risultati");
 			
-			  return responseChannel.send(noResults);
+			  responseChannel.send(noResults);
 			}
 		}
   });
@@ -207,7 +208,8 @@ function wordpressSearch(keywords, embedColor, responseChannel)
 {
 	const WPAPI = require("wpapi");
 	const wp = new WPAPI({ endpoint: "https://www.qdss.it/wp-json" });
-	const msg = "Ricerca di **" + keywords + "** in corso...";
+	const msg = keywords ? "Ricerca di **" + keywords + "** in corso..." 
+		: "Ricerca degli ultimi articoli in corso...";
 	
 	responseChannel.send(msg).then(async (msg) => {
 		wp.posts().search(keywords).get(async function(err, results)
@@ -256,13 +258,13 @@ function wordpressSearch(keywords, embedColor, responseChannel)
 					.setColor(embedColor)
 					.setDescription("0 risultati");
 
-				  return responseChannel.send(embed);
+				  responseChannel.send(noResults);
 				}
 			}
 			
-			return msg.delete();	// Eliminazione del messaggio "Ricerca in corso..."
-    });
-  });
+			msg.delete();	// Eliminazione del messaggio "Ricerca in corso..."
+    	});
+  	});
 }
 
 module.exports = Ricerca;

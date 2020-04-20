@@ -11,6 +11,14 @@ const config = {
   // Your Bot's Token. Available on https://discordapp.com/developers/applications/me
   "token": process.env.TOKEN,
 
+  /*"dashboard" : {
+    "oauthSecret": "enter oauth secret here", // This is the `client` secret in your bot application page.
+    "callbackURL": "http://localhost:8080/callback",
+    "sessionSecret": "super-secret-session-thing",
+    "domain": "localhost",
+    "port": 8080
+  },*/
+
   // Default per-server settings. These settings are entered in a database on first load, 
   // And are then completely ignored from this file. To modify default settings, use the `conf` command.
   // DO NOT REMOVE THIS BEFORE YOUR BOT IS LOADED AND FUNCTIONAL.
