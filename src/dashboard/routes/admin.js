@@ -1,12 +1,9 @@
 var express = require('express');
 var admin = express.Router();
 const passwordProtected = require('express-password-protect');
-const fs = require('fs');
-const dbFile = '../../../database/sqlite.db';
-const exists = fs.existsSync(dbFile);
 const QDSS_DB = require('../dashboard-sqlite.js');
-const sqlite3 = require('sqlite3').verbose();
 const Discord = require("discord.js");
+
 
 class QdssDashboard extends Discord.Client {
   constructor(options) {
@@ -21,12 +18,12 @@ class QdssDashboard extends Discord.Client {
 const client = new QdssDashboard();
 client.login(client.config.token);
 
-//Admin
+// Admin
 const Admin = {
-    username: process.env.ADMIN,
-    password: process.env.AdminPassword,
-    maxAge: 86400000 //1 day
-  }
+  username: process.env.ADMIN,
+  password: process.env.AdminPassword,
+  maxAge: 86400000 // 1 day
+}
 admin.use(passwordProtected(Admin))
 
 admin.get('/richieste', (req, res) => {
@@ -42,8 +39,7 @@ admin.get('/richieste', (req, res) => {
       res.render('richieste', {richieste: requestParsed, path: req.path});
     }
   }).catch( (err) => console.log(err));
-
-})
+});
 
 admin.post('/richieste', (req, res) => {
   const db = QDSS_DB.Open();
