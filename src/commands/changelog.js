@@ -83,13 +83,13 @@ class Changelog extends Command {
                         {
                             // Conteggio delle reactions per determinare le opzioni di creazione del post
                             let pin = false, everyone = false;
-                            const pinReaction = msg2.reactions.find(r => r.emoji.name === '📌');
-                            const everyoneReaction = msg2.reactions.find(r => r.emoji.name === '📢');
+                            const pinReaction = msg2.reactions.cache.find(r => r.emoji.name === '📌');
+                            const everyoneReaction = msg2.reactions.cache.find(r => r.emoji.name === '📢');
                             
                             if (pinReaction !== undefined)
-                                pin = (pinReaction.users.find(u => u.id === message.author.id) === message.author);
+                                pin = (pinReaction.users.cache.find(u => u.id === message.author.id) === message.author);
                             if (everyoneReaction !== undefined)
-                                everyone = (everyoneReaction.users.find(u => u.id === message.author.id) === message.author);
+                                everyone = (everyoneReaction.users.cache.find(u => u.id === message.author.id) === message.author);
 
                             // Invio del messaggio nell'apposito canale testuale su Discord
 							const changelog = `***${titolo}***\n\n${everyone ? "@everyone " : ""}${contenuto}`;

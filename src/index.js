@@ -328,7 +328,7 @@ cron.schedule("0 1,7,13,19 * * *", function() {
 				
 			  if (!user) continue;
 				
-			  const guildMember = await client.guilds.first().members.fetch(user, true)
+			  const guildMember = await client.guilds.cache.first().members.fetch(user, true)
 			  .catch( (err) => client.logger.log("Id " + id + " doesn't resolve to any GuildMember (" + err + ")", "log") );
 
 			  if (guildMember && guildMember.user.tag !== tag)
@@ -379,15 +379,15 @@ cron.schedule("0 * * * *", function()
       resolve();
     else 
     {
-      const guild = client.guilds.first();
-      const channels = guild.channels.array();
+      const guild = client.guilds.cache.first();
+      const channels = guild.channels.cache.array();
 
       for (let i = 0; i < liste.length; i++)
       {
         const channelName = tools.sanitizeTextChannelName(liste[i].nomeCompleto);
         let channel = channels.find((val) => val.name === channelName);
 
-        let role = guild.roles.array().find((val) => val.name === liste[i].nomeCompleto);
+        let role = guild.roles.cache.array().find((val) => val.name === liste[i].nomeCompleto);
 
         // Se il TextChannel corrispondente esiste deve essere eliminato
         if (liste[i].dimensione < CHANNEL_ELIMINATION_THRESHOLD && channel)
