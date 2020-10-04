@@ -37,10 +37,10 @@ class Abbandona extends Command {
 			if (registration)
 			{
 				const gameName = registration.nomeCompleto;
-				const role = message.guild.roles.find(role => role.name === gameName);
+				const role = message.guild.roles.cache.find(role => role.name === gameName);
 				
 				if (role)
-					message.member.removeRole(role);    // Toglie all'utente il ruolo del gioco da cui si è cancellato
+					message.member.roles.remove(role);    // Toglie all'utente il ruolo del gioco da cui si è cancellato
 
 				// Eliminazione del record relativo alla registrazione dell'utente
 				await db.runAsync("DELETE FROM Registrazioni WHERE game = ? AND userId = ?", [game, userId]);

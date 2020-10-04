@@ -97,7 +97,7 @@ class Conf extends Command {
       Object.entries(this.client.settings.get("default")).forEach(([key, value]) => {
         array.push(`${key}${" ".repeat(20 - key.length)}::  ${value}`); 
       });
-      await message.channel.send(`= Bot Default Settings = ${array.join("\n")}`, {code: "asciidoc"});
+      await message.channel.send(`= Bot Default Settings = \n${array.join("\n")}`, {code: "asciidoc"});
 	}
   }
 }

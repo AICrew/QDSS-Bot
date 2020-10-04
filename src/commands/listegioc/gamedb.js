@@ -160,7 +160,7 @@ class GameDB extends Command {
 		});
 
 		// Creazione del ruolo associato al gioco in questione
-		const role = message.guild.roles.find(role => role.name === gameName);
+		const role = message.guild.roles.cache.find(role => role.name === gameName);
 		if (!role)
 		{
 			message.guild.createRole({ name: gameName, color: gameColor })
@@ -218,7 +218,7 @@ class GameDB extends Command {
 			});
 
 			// Cancellazione del ruolo associato al gioco in questione
-			const role = message.guild.roles.find(role => role.name === row.nomeCompleto);
+			const role = message.guild.roles.cache.find(role => role.name === row.nomeCompleto);
 			if (role)
 			{
 				role.delete("Eliminazione del gioco " + row.nomeCompleto + " dal sistema")
@@ -282,7 +282,7 @@ class GameDB extends Command {
 			await db.runAsync("UPDATE Giochi SET colore = ? WHERE nome = ?", [color, game]);
 			message.channel.send("Aggiornamento del database completato con successo. :white_check_mark:");
 				
-			const role = message.guild.roles.find(role => role.name === row.nomeCompleto);
+			const role = message.guild.roles.cache.find(role => role.name === row.nomeCompleto);
 			if (role)
 			{                            // Modifica del colore associato al ruolo del gioco
 				role.setColor(color)

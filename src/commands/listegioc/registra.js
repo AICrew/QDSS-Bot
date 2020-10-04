@@ -42,7 +42,7 @@ class Registra extends Command {
 			if (row)
 			{
 				const gameName = row.nomeCompleto;
-				const role = message.guild.roles.find(role => role.name === gameName);
+				const role = message.guild.roles.cache.find(role => role.name === gameName);
 
 				const registered = await db.getAsync("SELECT * FROM Registrazioni WHERE game = ? AND userId = ?", [game, userId])
 
@@ -77,7 +77,7 @@ class Registra extends Command {
 					}
 
 					if (role)
-						return message.member.addRole(role);    // Assegna all'utente il ruolo del gioco a cui si è appena registrato
+						return message.member.roles.add(role);    // Assegna all'utente il ruolo del gioco a cui si è appena registrato
 				}
 				else
 				{

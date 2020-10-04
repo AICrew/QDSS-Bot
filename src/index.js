@@ -193,7 +193,28 @@ class QdssBot extends Discord.Client {
 // This is your client. Some people call it `bot`, some people call it `self`,
 // some might call it `cootchie`. Either way, when you see `client.something`,
 // or `bot.something`, this is what we're refering to. Your client.
-const client = new QdssBot();
+const client = new QdssBot(
+  {ws:
+    {intents:[
+      "GUILDS", 
+      "GUILD_MEMBERS",
+      "GUILD_PRESENCES",
+      "GUILD_MESSAGES",
+      "GUILD_MESSAGE_REACTIONS",
+      "DIRECT_MESSAGES"
+      /*"GUILD_BANS",
+      "GUILD_EMOJIS",
+      "GUILD_INTEGRATIONS",
+      "GUILD_WEBHOOKS",
+      "GUILD_INVITES",
+      "GUILD_VOICE_STATES",
+      "DIRECT_MESSAGE_TYPING",
+      "DIRECT_MESSAGE_REACTIONS",
+      "GUILD_MESSAGE_TYPING"*/
+    ]}
+  }
+);
+
 
 // We're doing real fancy node 8 async/await stuff here, and to do that
 // we need to wrap stuff in an anonymous function. It's annoying but it works.
@@ -297,7 +318,7 @@ cron.schedule("0 1,7,13,19 * * *", function() {
 			  const id = users[i].userId;
 			  const tag = users[i].username;
 
-			  const user = await client.fetchUser(users[i].userId, true)
+			  const user = await client.users.fetch(users[i].userId, true)
 			  .catch( async (err) => 
 			  {
 				// Rimozione dell'utente dal database
@@ -307,7 +328,7 @@ cron.schedule("0 1,7,13,19 * * *", function() {
 				
 			  if (!user) continue;
 				
-			  const guildMember = await client.guilds.first().fetchMember(user, true)
+			  const guildMember = await client.guilds.first().members.fetch(user, true)
 			  .catch( (err) => client.logger.log("Id " + id + " doesn't resolve to any GuildMember (" + err + ")", "log") );
 
 			  if (guildMember && guildMember.user.tag !== tag)
@@ -457,7 +478,7 @@ watcher.on('new entries', function (entries) {
     var title = entry.title;
     var author = entry.author;
     var link = entry.link;
-    var logo= 'https://scontent.fbri1-1.fna.fbcdn.net/v/t1.0-1/p200x200/16640956_558100834395740_3216339822482768615_n.png?_nc_cat=110&_nc_oc=AQlMmwSSbrUeioAOloqKNHfFvOO42zApJ2QEHeADLsBiPN6pp_TnK5XyE8GK3LKb51I&_nc_ht=scontent.fbri1-1.fna&oh=0eaec089ab74cc6e1cb8402d914d4d6f&oe=5E0DA0DE';
+    var logo= 'https://scontent.fbri1-1.fna.fbcdn.net/v/t1.0-9/16640956_558100834395740_3216339822482768615_n.png?_nc_cat=110&_nc_sid=85a577&_nc_ohc=1wXkuKZo7dgAX-HoyGb&_nc_ht=scontent.fbri1-1.fna&oh=92909a49c2f09b260eb9b3345994e334&oe=5EC35511';
     var date = entry.date;
     var description = entry['rss:description']['#'];
     const $ = cheerio.load(description);
@@ -487,8 +508,7 @@ watcher.on('new entries', function (entries) {
       
     })
     var descMarkdown = turndownService.turndown(htmldescription);
-
-    const articolo = new Discord.RichEmbed()
+    const articolo = new Discord.MessageEmbed()
       .setTitle(title)
       .setAuthor(author)
       .setImage(img)

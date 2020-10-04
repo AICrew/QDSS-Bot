@@ -174,8 +174,8 @@ function youtubeSearch(keywords, options, embedColor, responseChannel)
 		{
 			if (results[i] !== undefined)
 			{
-			  // Costruzione del messaggio di risposta tramite RichEmbed
-			  const embed = new Discord.RichEmbed()
+			  // Costruzione del messaggio di risposta tramite MessageEmbed
+			  const embed = new Discord.MessageEmbed()
 			    .setTitle(results[i].title)
 				.setAuthor(results[i].channelTitle)
 				.setDescription(results[i].description)
@@ -188,7 +188,7 @@ function youtubeSearch(keywords, options, embedColor, responseChannel)
 			}
 			else if (i == 0)	// Se la ricerca non ha prodotto risultati
 			{
-			  const noResults = new Discord.RichEmbed()
+			  const noResults = new Discord.MessageEmbed()
 				.setColor(embedColor)
 				.setDescription("0 risultati");
 			
@@ -240,8 +240,8 @@ function wordpressSearch(keywords, embedColor, responseChannel)
 					else immagine = media.guid.rendered; });
 				  
 				  
-				  // Creazione messaggio di risposta tramite RichEmbed
-				  const embed = new Discord.RichEmbed()
+				  // Creazione messaggio di risposta tramite MessageEmbed
+				  const embed = new Discord.MessageEmbed()
 					.setTitle(title)
 					.setDescription(desc)
 					.setAuthor(autore)
@@ -254,7 +254,7 @@ function wordpressSearch(keywords, embedColor, responseChannel)
 				}
 				else if (i == 0)	// Se la ricerca non ha prodotto risultati
 				{
-				  const noResults = new Discord.RichEmbed()
+				  const noResults = new Discord.MessageEmbed()
 					.setColor(embedColor)
 					.setDescription("0 risultati");
 

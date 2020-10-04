@@ -7,7 +7,7 @@ const Discord = require("discord.js");
 /************************************************************************************************
 *  Il comando GIOCHI visualizza l'elenco dei giochi supportati dal bot per i quali				*
 *  è disponibile il servizio di registrazione del proprio nickname tra i giocatori attivi,		*
-*	- l'elenco di risposta è formattato tramite (uno o più) RichEmbed, organizzati in pagine	*
+*	- l'elenco di risposta è formattato tramite (uno o più) MessageEmbed, organizzati in pagine	*
 *																								*
 ************************************************************************************************/
 
@@ -51,15 +51,15 @@ class Giochi extends Command {
 				  else break;
 				}
 				
-				// Creazione dell'array di pagine (RichEmbed)
-				const embed = new Discord.RichEmbed()
+				// Creazione dell'array di pagine (MessageEmbed)
+				const embed = new Discord.MessageEmbed()
 				  .setColor(0x11C8D5)
 				  .addField("`[nome comando]` Giochi supportati: ", l_items, true);
 
 				pages.push(embed);
 			}
 			
-			// Assegnazione dei numeri di pagina a ciascun RichEmbed in pages[]
+			// Assegnazione dei numeri di pagina a ciascun MessageEmbed in pages[]
 			for (let i = 0; i < pages.length; i++)
 			{
 			  if (pages.length == 1)

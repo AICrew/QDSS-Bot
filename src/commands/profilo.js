@@ -9,7 +9,7 @@ const Discord = require("discord.js");
 * di: Stato (online, afk, ...), Livello e XP, Reputazione ed elenco dei giochi per i		*
 * quali l'utente ha registrato un account alla relativa lista								*
 *	- l'utente è selezionato tramite menzione o, se omesso, si assume l'autore del comando	*
-*	- l'elenco è formattato all'interno di un RichEmbed di Discord							*
+*	- l'elenco è formattato all'interno di un MessageEmbed di Discord							*
 *																							*
 ********************************************************************************************/
 
@@ -96,19 +96,19 @@ class Profilo extends Command {
 			};
 		}
 		
-		// Formattazione del messaggio all'interno di un RichEmbed
-		const embed = new Discord.RichEmbed()
+		// Formattazione del messaggio all'interno di un MessageEmbed
+		const embed = new Discord.MessageEmbed()
 			.setAuthor(username, statusIcon)
-			.setThumbnail(targetMember.user.avatarURL)
+			.setThumbnail(targetMember.user.avatarURL())
 			.setTimestamp()
-			.setColor(targetMember.hoistRole ? targetMember.hoistRole.hexColor : "0xffffff")	// Colore del privilege-role dell'utente
+			.setColor(targetMember.roles.hoist ? targetMember.roles.hoist.hexColor : "0xffffff")	// Colore del privilege-role dell'utente
 			.addField("Livello", livello, true)			
 			.addField("Reputazione", ` 🔸 **${reputazione} punt${reputazione == 1 ? "o" : "i"}**`, true)
-			.addBlankField(false)
+			.addField("\u200b", "\u200b")
 			.addField("Giochi:", giochi, true)
 			.addField("Nickname registrato:", nicknames, true)
 			.setFooter(`Attualmente registrato a ${rows.length} list${rows.length == 1 ? "a" : "e"}`)
-			.addBlankField(false);
+			.addField("\u200b", "\u200b")
 
 		return message.channel.send(embed);
 	})

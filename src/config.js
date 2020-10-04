@@ -55,8 +55,8 @@ const config = {
       // If they don't then return false, which will prevent them from executing the command.
       check: (message) => {
         try {
-          const modRole = message.guild.roles.find(r => r.name.toLowerCase() === message.settings.modRole.toLowerCase());
-          if (modRole && message.member.roles.has(modRole.id)) return true;
+          const modRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.modRole.toLowerCase());
+          if (modRole && message.member.roles.cache.has(modRole.id)) return true;
         } catch (e) {
           return false;
         }
@@ -67,19 +67,12 @@ const config = {
       name: "Administrator", 
       check: (message) => {
         try {
-          const adminRole = message.guild.roles.find(r => r.name.toLowerCase() === message.settings.adminRole.toLowerCase());
-          return (adminRole && message.member.roles.has(adminRole.id));
+          const adminRole = message.guild.roles.cache.find(r => r.name.toLowerCase() === message.settings.adminRole.toLowerCase());
+          return (adminRole && message.member.roles.cache.has(adminRole.id));
         } catch (e) {
           return false;
         }
       }
-    },
-    // This is the server owner.
-    { level: 4,
-      name: "Server Owner", 
-      // Simple check, if the guild owner id matches the message author's ID, then it will return true.
-      // Otherwise it will return false.
-      check: (message) => message.channel.type === "text" ? (message.guild.owner.user.id === message.author.id ? true : false) : false
     },
 
     // Bot Support is a special inbetween level that has the equivalent of server owner access
@@ -103,7 +96,18 @@ const config = {
     { level: 10,
       name: "Bot Owner", 
       // Another simple check, compares the message author id to the one stored in the config file.
-      check: (message) => message.client.appInfo.owner.id === message.author.id
+      check: async (message) => {
+        var ownerId = await message.client.fetchApplication().then((appInfo) => appInfo.owner.ownerID);
+        return ownerId === message.author.id;
+      }
+    },
+
+    // This is the server owner.
+    { level: 10,
+      name: "Server Owner", 
+      // Simple check, if the guild owner id matches the message author's ID, then it will return true.
+      // Otherwise it will return false.
+      check: (message) => message.channel.type === "text" ? (message.guild.owner.user.id === message.author.id ? true : false) : false
     }
   ]
 };

@@ -165,21 +165,21 @@ module.exports = {
 				}
 				
 				// Così la reaction appare sempre 'clickabile' all'utente
-				reaction.remove(author);
+				reaction.users.remove(author);
 			});
 			
 			
 			reactCollector.on('end', async () => {
 				
 				// Rimozione delle reaction "buttons" dal messaggio allo scadere del timer
-				let reactors = await reactionPrevious.fetchUsers();
-				reactors.forEach((userId, userObj, map) => { reactionPrevious.remove(userId); });
+				let reactors = await reactionPrevious.users.fetch();
+				reactors.forEach((userId, userObj, map) => { reactionPrevious.users.remove(userId); });
 				
-				reactors = await reactionImage.fetchUsers();
-				reactors.forEach((userId, userObj, map) => { reactionImage.remove(userId); });
+				reactors = await reactionImage.users.fetch();
+				reactors.forEach((userId, userObj, map) => { reactionImage.users.remove(userId); });
 				
-				reactors = await reactionNext.fetchUsers();
-				reactors.forEach((userId, userObj, map) => { reactionNext.remove(userId); });
+				reactors = await reactionNext.users.fetch();
+				reactors.forEach((userId, userObj, map) => { reactionNext.users.remove(userId); });
 			});
 		});
 	},
@@ -242,7 +242,7 @@ module.exports = {
 					
 					if (newLevel == 3)		// Assegnazione del ruolo Approvato | LVL 3+ (e messaggio)
 					{
-						member.addRole(ROLE_ID_APPROVATO)
+						member.roles.add(ROLE_ID_APPROVATO)
 							.then(console.log("L'utente **" + member.user.tag + "** ha ricevuto il ruolo Approvato | LVL 3+"))
 							.catch(console.error);
 							
@@ -250,7 +250,7 @@ module.exports = {
 					}
 					else if (newLevel == 20)	// Assegnazione dei ruoli DJ e Veterano | LVL 20+ (e messaggio)
 					{
-						member.addRole(ROLE_ID_VETERANO)
+						member.roles.add(ROLE_ID_VETERANO)
 							.then(console.log("L'utente **" + member.user.tag + "** ha ricevuto il ruolo Veterano | LVL 20+"))
 							.catch(console.error);
 							

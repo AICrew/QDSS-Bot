@@ -8,7 +8,7 @@ const Discord = require("discord.js");
 *  Il comando LISTA visualizza l'elenco dei giocatori registrati alla lista di un certo gioco		    *
 *   - gli utenti sono ordinati in base allo status: Online, AFK, Occupati, Offline					        *
 *	  - all'interno di ogni gruppo l'ordine degli utenti è randomizzato								                *
-*	  - il messaggio di risposta è formattato tramite Discord RichEmbed con immagine e colori			    *
+*	  - il messaggio di risposta è formattato tramite Discord MessageEmbed con immagine e colori			    *
 *	  - nel caso di messaggio troppo lungo, viene suddiviso in pagine navigabili tramite reactions	  *
 *																									                                                  *
 ****************************************************************************************************/
@@ -60,7 +60,7 @@ class Lista extends Command {
         
         for (let i = 0; i < rows.length; i++)
         {
-          await this.client.fetchUser(rows[i].userId, true).then( (user) => 
+          await this.client.users.fetch(rows[i].userId, true).then( (user) => 
           {
             if (!user) 
               return;
@@ -104,8 +104,8 @@ class Lista extends Command {
             else break;
           }
 
-          // Costruzione del messaggio di risposta, formattato tramite RichEmbed
-          const embed = new Discord.RichEmbed()
+          // Costruzione del messaggio di risposta, formattato tramite MessageEmbed
+          const embed = new Discord.MessageEmbed()
             .setColor(color)
             .setThumbnail(logo)
             .addField("Username (nickname in gioco)", l_username, true)
@@ -119,7 +119,7 @@ class Lista extends Command {
           pages.push(embed);
         }
     
-        // Assegnazione dei numeri di pagina a ciascun RichEmbed in pages[]
+        // Assegnazione dei numeri di pagina a ciascun MessageEmbed in pages[]
         for (let i = 0; i < pages.length; i++)
         {
           if (pages.length == 1)

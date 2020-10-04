@@ -59,13 +59,13 @@ user.get("/giocatori", async (req, res) => {
     // Processa l'elenco di iscrizioni, recuperando le informazioni degli utenti
     // e costruendo l'array di iscritti per ciascun gioco considerato
     for (let i = 0; i < users.length; i++) {
-      await client.fetchUser(users[i].userId, true).then( (user) => {
+      await client.users.fetch(users[i].userId, true).then( (user) => {
         if (!user) return;
         else {
           let iscritto = {        // Oggetto 'iscritto'
             nome: user.tag,
             nickname: users[i].nickname,
-            avatar: user.avatarURL ? user.avatarURL : "http://aicrew.it/qdss/img/icon_discord.png",
+            avatar: user.avatarURL() ? user.avatarURL() : "http://aicrew.it/qdss/img/icon_discord.png",
             status: 0
           };
 
@@ -101,11 +101,11 @@ user.get("/classifica", (req, res) => {
     const users = new Array();
     for (let i = 0; i < rows.length; i++) {
       // Si ottiene lo stato di presenza dell'utente e lo si inserisce nell'array corrispondente
-      await client.fetchUser(rows[i].userId, true).then( (user) => {
+      await client.users.fetch(rows[i].userId, true).then( (user) => {
         if (!user) return;
 
         var reputazione = rows[i]['SUM(deltaRep)'];
-        var avatar = user.avatarURL ? user.avatarURL
+        var avatar = user.avatarURL() ? user.avatarURL()
           : "http://aicrew.it/qdss/img/icon_discord.png";
 
         users.push({tag: user.tag, avatar: avatar, level: rows[i].level, totalxp: rows[i].totalxp, levelxp: rows[i].levelxp, rep: reputazione});

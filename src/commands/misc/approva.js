@@ -32,15 +32,15 @@ class Approva extends Command {
       return;
     }
     
-    if (message.member.roles.has(ROLE_ID_VETERANO)) 	// Se il chiamante ha i permessi necessari per eseguire l'azione...
+    if (message.member.roles.cache.has(ROLE_ID_VETERANO)) 	// Se il chiamante ha i permessi necessari per eseguire l'azione...
     {
-      if (mentionedMember.roles.has(ROLE_ID_APPROVATO))  	// ... e il membro menzionato non è già approvato
+      if (mentionedMember.roles.cache.has(ROLE_ID_APPROVATO))  	// ... e il membro menzionato non è già approvato
       {
         message.channel.send("**" + mentionedMember.user.tag + "** è già approvato");
       }
       else
       { // Assegna all'utente menzionato il ruolo 'Approvato'
-        mentionedMember.addRole(ROLE_ID_APPROVATO)
+        mentionedMember.roles.add(ROLE_ID_APPROVATO)
           .then(message.channel.send("**" + mentionedMember.user.tag + "** è stato approvato"))
           .catch(console.error);
       }
