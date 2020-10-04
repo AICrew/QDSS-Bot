@@ -53,7 +53,7 @@ module.exports = class {
 			catch(err)	// Catching and logging possible errors
 			{
 				const errorMsg = err.toString();
-				message.guild.channels.find(c => c.id === DEBUG_CHANNEL_ID)
+				message.guild.channels.cache.find(c => c.id === DEBUG_CHANNEL_ID)
 					.send("[XP SYSTEM ERROR] " + errorMsg.substring(0, Math.min(errorMsg.length, 1950)) );
 			}
 		});
@@ -113,7 +113,7 @@ This command requires level ${this.client.levelCache[cmd.conf.permLevel]} (${cmd
       this.client.logger.error(`Command ${cmd.help.name} encountered an error: ${err}`);
       if (message.guild !== undefined)
       {
-        const debugChannel = message.guild.channels.find(c => c.id === DEBUG_CHANNEL_ID);
+        const debugChannel = message.guild.channels.cache.find(c => c.id === DEBUG_CHANNEL_ID);
         if (debugChannel)
           debugChannel.send("Il comando `+" + cmd.help.name + "` ha scatenato l'eccezione *" + err + "*");
       }

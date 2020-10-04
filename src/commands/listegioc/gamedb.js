@@ -230,7 +230,7 @@ class GameDB extends Command {
 			// Eliminazione dell'eventuale stanza dedicata al gioco
 			const GAME_CATEGORY_CHANNEL_ID = '592752263861108746';
 			const channelName = tools.sanitizeTextChannelName(row.nomeCompleto);
-			const channel = message.guild.channels.find(chan => chan.name === channelName && chan.parentID === GAME_CATEGORY_CHANNEL_ID);
+			const channel = message.guild.channels.cache.find(chan => chan.name === channelName && chan.parentID === GAME_CATEGORY_CHANNEL_ID);
 			if (channel)
 			{
 				channel.delete()

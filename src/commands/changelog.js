@@ -25,7 +25,7 @@ class Changelog extends Command {
     async run(message, args, level) 
 	{
         let titolo = args.join(" ");
-        const channel = message.guild.channels.find(c => c.id === BOT_CHANGELOG_CHANNEL_ID);
+        const channel = message.guild.channels.cache.find(c => c.id === BOT_CHANGELOG_CHANNEL_ID);
 
         if (!(/^\".*\"$/.test(titolo)))
         {
