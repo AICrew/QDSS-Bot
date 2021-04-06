@@ -26,73 +26,73 @@ class Registra extends Command {
   async run(message, args, level) 
   {
     if (args.length == 0)
-		{
-			message.reply("devi indicare il nome di un gioco come secondo parametro del comando.");
-			return;
-		}
+	{
+		message.reply("devi indicare il nome di un gioco come secondo parametro del comando.");
+		return;
+	}
 	
     const game = args.shift().toLowerCase();
-		const nickname = args.join(" ");
-		const userId = message.author.id;
-		const author = message.author.tag;
+	const nickname = args.join(" ");
+	const userId = message.author.id;
+	const author = message.author.tag;
 
-		const db = QDSS_DB.Open();
-		db.getAsync("SELECT * FROM Giochi WHERE nome = ?", [game]).then( async (row) => 
+	const db = QDSS_DB.Open();
+	db.getAsync("SELECT * FROM Giochi WHERE nome = ?", [game]).then( async (row) => 
+	{
+		if (row)
 		{
-			if (row)
+			const gameName = row.nomeCompleto;
+			const role = await message.guild.roles.fetch(row.ruolo);
+
+			const registered = await db.getAsync("SELECT * FROM Registrazioni WHERE game = ? AND userId = ?", [game, userId])
+
+			if (!registered)
 			{
-				const gameName = row.nomeCompleto;
-				const role = message.guild.roles.cache.find(role => role.name === gameName);
-
-				const registered = await db.getAsync("SELECT * FROM Registrazioni WHERE game = ? AND userId = ?", [game, userId])
-
-				if (!registered)
+				await db.insertUserIfNotExists(userId, author);
+				
+				if (!nickname || /^\s*$/.test(nickname))		// Nickname non specificato
 				{
-					await db.insertUserIfNotExists(userId, author);
-					
-					if (!nickname || /^\s*$/.test(nickname))		// Nickname non specificato
-					{
-						// Registrazione senza nickname
-						await db.runAsync("INSERT INTO Registrazioni (userId, game) VALUES (?,?)", [userId, game]);
-						message.reply("sei stato aggiunto alla lista per " + gameName +
-						"\nUsa il comando +nickname <gioco> <nickname> per specificare il tuo nickname di gioco nella lista");
-					}
-					else
-					{
-						if (/(https?|ftp):\/\//i.test(nickname))    // Controlla che il nickname non contenga URL
-						{
-							message.reply("il nickname non può contenere degli URL");
-							return;
-						}
-						
-						if (nickname.length > MAX_NICKNAME_LENGTH)		// Controllo lunghezza del campo nickname
-						{
-							message.reply("hai a disposizione un massimo di " + MAX_NICKNAME_LENGTH + " caratteri per nickname e informazioni aggiuntive.");
-							return;
-						}
-						
-						// Registrazione con nickname
-						await db.runAsync("INSERT INTO Registrazioni (userId,game,nickname) VALUES (?,?,?)", [userId, game, nickname]);
-						message.reply("sei stato aggiunto alla lista per " + gameName + " con il nickname: " + nickname);
-					}
-
-					if (role)
-						return message.member.roles.add(role);    // Assegna all'utente il ruolo del gioco a cui si è appena registrato
+					// Registrazione senza nickname
+					await db.runAsync("INSERT INTO Registrazioni (userId, game) VALUES (?,?)", [userId, game]);
+					message.reply("sei stato aggiunto alla lista per " + gameName +
+					"\nUsa il comando +nickname <gioco> <nickname> per specificare il tuo nickname di gioco nella lista");
 				}
 				else
 				{
-					// L'utente è già registrato alla lista del gioco
-					return message.reply("sei già nella lista per " + gameName + " (" + registered.nickname + ")");
+					if (/(https?|ftp):\/\//i.test(nickname))    // Controlla che il nickname non contenga URL
+					{
+						message.reply("il nickname non può contenere degli URL");
+						return;
+					}
+					
+					if (nickname.length > MAX_NICKNAME_LENGTH)		// Controllo lunghezza del campo nickname
+					{
+						message.reply("hai a disposizione un massimo di " + MAX_NICKNAME_LENGTH + " caratteri per nickname e informazioni aggiuntive.");
+						return;
+					}
+					
+					// Registrazione con nickname
+					await db.runAsync("INSERT INTO Registrazioni (userId,game,nickname) VALUES (?,?,?)", [userId, game, nickname]);
+					message.reply("sei stato aggiunto alla lista per " + gameName + " con il nickname: " + nickname);
 				}
+
+				if (role)
+					return message.member.roles.add(role);    // Assegna all'utente il ruolo del gioco a cui si è appena registrato
 			}
-			else 
-				return message.reply("il gioco `" + game + "` non esiste o non ha ancora una lista.");
-		})
-		.then( () => db.close() )
-		.catch( (err) => {
-			db.close();
-			throw err;
-		});
+			else
+			{
+				// L'utente è già registrato alla lista del gioco
+				return message.reply("sei già nella lista per " + gameName + " (" + registered.nickname + ")");
+			}
+		}
+		else 
+			return message.reply("il gioco `" + game + "` non esiste o non ha ancora una lista.");
+	})
+	.then( () => db.close() )
+	.catch( (err) => {
+		db.close();
+		throw err;
+	});
 
   }
 }

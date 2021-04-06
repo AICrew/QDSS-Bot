@@ -87,7 +87,7 @@ class GameDB extends Command {
 		let parsingError = true;
 		let commandLine = args.join(" ");
 		let firstIndex = commandLine.search("\"");
-		let game, gameName, gameColor, gameLogo;
+		let game, gameName, gameColor, gameLogo, gameRole;
 		let query_insert = "";
 		
 		if (firstIndex != -1)
@@ -127,12 +127,32 @@ class GameDB extends Command {
 			"`+gamedb add \"<nome-gioco-completo>\" <nome-gioco-abbreviato> <0xCOLORE> [link-immagine-gioco]`");
 		  return;
 		}
-		else
+
+		// Creazione del ruolo associato al gioco in questione
+		let role = message.guild.roles.cache.find(role => role.name === gameName);
+		if (!role)
 		{
-		  query_insert = (gameLogo === undefined) ?
-			`INSERT INTO Giochi (nome,nomeCompleto,colore) VALUES ('${game}', '${gameName}', '${gameColor}')` :
-			`INSERT INTO Giochi (nome,nomeCompleto,colore,logo) VALUES ('${game}', '${gameName}', '${gameColor}', '${gameLogo}')`;
+			message.guild.roles.create({
+				data: {
+					name: gameName,
+					color: gameColor,
+				},
+				reason: "Ruolo creato per il gioco " + gameName
+			  })
+			  .then((role) => {
+				role.setMentionable(true);
+				gameRole = role.id;
+				message.channel.send("Il ruolo [" + gameName + "] è stato creato correttamente. :white_check_mark: ");
+			  })
+			  .catch(console.error);
 		}
+		else message.channel.send("Il ruolo [" + gameName + "] era già presente nel server e perciò non è stato creato.");
+		
+		role = await message.guild.roles.fetch(gameRole, true);		// Questo garantisce che il ruolo sia inserito nella cache non appena creato
+		
+		query_insert = (gameLogo === undefined) ?
+		  `INSERT INTO Giochi (nome,nomeCompleto,colore,ruolo) VALUES ('${game}', '${gameName}', '${gameColor}', '${gameRole}')` :
+		  `INSERT INTO Giochi (nome,nomeCompleto,colore,logo,ruolo) VALUES ('${game}', '${gameName}', '${gameColor}', '${gameLogo}', '${gameRole}')`;
 		
 		const db = QDSS_DB.Open();
 		db.getAsync("SELECT * FROM Giochi WHERE nome = ?", [game]).then( async (gameExists) => 
@@ -158,17 +178,6 @@ class GameDB extends Command {
 			db.close();
 			throw err;
 		});
-
-		// Creazione del ruolo associato al gioco in questione
-		const role = message.guild.roles.cache.find(role => role.name === gameName);
-		if (!role)
-		{
-			message.guild.createRole({ name: gameName, color: gameColor })
-			  .then(role => role.setMentionable(true),
-				message.channel.send("Il ruolo [" + gameName + "] è stato creato correttamente. :white_check_mark: "))
-			  .catch(console.error);
-		}
-		else message.channel.send("Il ruolo [" + gameName + "] era già presente nel server e perciò non è stato creato.");
 	}
 	else if (action == ACTION_REMOVE_GAME_DB)
 	{
@@ -218,7 +227,7 @@ class GameDB extends Command {
 			});
 
 			// Cancellazione del ruolo associato al gioco in questione
-			const role = message.guild.roles.cache.find(role => role.name === row.nomeCompleto);
+			const role = await message.guild.roles.fetch(row.ruolo);
 			if (role)
 			{
 				role.delete("Eliminazione del gioco " + row.nomeCompleto + " dal sistema")
@@ -282,7 +291,7 @@ class GameDB extends Command {
 			await db.runAsync("UPDATE Giochi SET colore = ? WHERE nome = ?", [color, game]);
 			message.channel.send("Aggiornamento del database completato con successo. :white_check_mark:");
 				
-			const role = message.guild.roles.cache.find(role => role.name === row.nomeCompleto);
+			const role = await message.guild.roles.fetch(row.ruolo);
 			if (role)
 			{                            // Modifica del colore associato al ruolo del gioco
 				role.setColor(color)

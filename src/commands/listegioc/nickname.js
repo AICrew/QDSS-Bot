@@ -5,10 +5,10 @@ const MAX_NICKNAME_LENGTH = 32;
 
 
 /********************************************************************************************
-*  Tramite il comando NICKNAME, un utente può aggiungere (o modificare, se già presente)	  *
-*  il proprio nickname in-game per il gioco specificato alla cui lista deve essersi			    *
-*  precedentemente registrato																                                *
-*																							                                              *
+*  Tramite il comando NICKNAME, un utente può aggiungere (o modificare, se già presente)	*
+*  il proprio nickname in-game per il gioco specificato alla cui lista deve essersi			*
+*  precedentemente registrato																*
+*																							*
 ********************************************************************************************/
 
 class Nickname extends Command {
@@ -32,10 +32,10 @@ class Nickname extends Command {
     }
 	
     const game = args.shift().toLowerCase();
-	  const nickname = args.join(" ");
+	const nickname = args.join(" ");
     const userId = message.author.id;
 	
-	  if (!nickname || /^\s*$/.test(nickname))    	// Controlla che il nickname non sia vuoto o abbia solo caratteri di spaziatura
+	if (!nickname || /^\s*$/.test(nickname))    	// Controlla che il nickname non sia vuoto o abbia solo caratteri di spaziatura
     {
       message.reply("devi specificare un nickname da registrare nella lista.");
       return;
@@ -57,7 +57,7 @@ class Nickname extends Command {
     {
       if (row) 
       {
-		    // Aggiornamento del nickname per l'account registrato
+		// Aggiornamento del nickname per l'account registrato
         await db.run("UPDATE Registrazioni SET nickname = ? WHERE userId = ? AND game = ?", [nickname, userId, game]);
         return message.reply("hai registrato per la lista di " + row.nomeCompleto + " il tuo nickname: " + nickname);
       }

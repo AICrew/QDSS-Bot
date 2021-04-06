@@ -5,12 +5,12 @@ const Discord = require("discord.js");
 
 
 /****************************************************************************************************
-*  Il comando LISTA visualizza l'elenco dei giocatori registrati alla lista di un certo gioco		    *
-*   - gli utenti sono ordinati in base allo status: Online, AFK, Occupati, Offline					        *
-*	  - all'interno di ogni gruppo l'ordine degli utenti è randomizzato								                *
-*	  - il messaggio di risposta è formattato tramite Discord MessageEmbed con immagine e colori			    *
-*	  - nel caso di messaggio troppo lungo, viene suddiviso in pagine navigabili tramite reactions	  *
-*																									                                                  *
+*  Il comando LISTA visualizza l'elenco dei giocatori registrati alla lista di un certo gioco		*
+*   - gli utenti sono ordinati in base allo status: Online, AFK, Occupati, Offline					*
+*	  - all'interno di ogni gruppo l'ordine degli utenti è randomizzato								*
+*	  - il messaggio di risposta è formattato tramite Discord MessageEmbed con immagine e colori	*
+*	  - nel caso di messaggio troppo lungo, viene suddiviso in pagine navigabili tramite reactions	*
+*																									*
 ****************************************************************************************************/
 
 class Lista extends Command {
@@ -34,8 +34,8 @@ class Lista extends Command {
     }
 
     const game = args[0].toLowerCase();
-    if (game === "giochi")
-    {														                        // A causa del comune utilizzo di +lista giochi al posto di +giochi
+    if (game === "giochi" || game === "games")
+    {														// A causa del comune utilizzo di +lista giochi al posto di +giochi
       const cmd = this.client.commands.get("giochi");		// si prevede l'eventualità di richiamare il comando Giochi se opportuno
       cmd.run(message, args, level);
       return;
@@ -80,16 +80,16 @@ class Lista extends Command {
         }
         
         // Shuffling dell'ordine degli utenti negli array 
-        const users = tools.shuffleArray(users_online)		// ONLINE USERS
-          .concat(tools.shuffleArray(users_afk))				  // AFK USERS
-          .concat(tools.shuffleArray(users_busy))				  // BUSY USERS
+        const users = tools.shuffleArray(users_online)			// ONLINE USERS
+          .concat(tools.shuffleArray(users_afk))				// AFK USERS
+          .concat(tools.shuffleArray(users_busy))				// BUSY USERS
           .concat(tools.shuffleArray(users_offline));			// OFFLINE USERS
         
         const pages = new Array();
     
         // Stringa footer di fondopagina
         const footer = (users.length == 1) ?
-        "1 giocatore registrato" : users.length + " giocatori registrati";
+			"1 giocatore registrato" : users.length + " giocatori registrati";
     
 
         // Creazione delle pagine della lista (i = #utente, n = #pagina)

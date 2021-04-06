@@ -370,7 +370,7 @@ const CHANNEL_ELIMINATION_THRESHOLD = 4;
 cron.schedule("0 * * * *", function() 
 {
   const db = QDSS_DB.Open();
-  db.allAsync("SELECT G.nomeCompleto, COUNT(*) AS dimensione FROM Registrazioni R, Giochi G " +
+  db.allAsync("SELECT G.nomeCompleto, G.ruolo, COUNT(*) AS dimensione FROM Registrazioni R, Giochi G " +
     "WHERE G.nome = R.game GROUP BY G.nomeCompleto").then( async (liste) => 
   {
     return new Promise( async (resolve, reject) =>
@@ -387,7 +387,7 @@ cron.schedule("0 * * * *", function()
         const channelName = tools.sanitizeTextChannelName(liste[i].nomeCompleto);
         let channel = channels.find((val) => val.name === channelName);
 
-        let role = guild.roles.cache.array().find((val) => val.name === liste[i].nomeCompleto);
+        let role = await guild.roles.fetch(liste[i].ruolo);
 
         // Se il TextChannel corrispondente esiste deve essere eliminato
         if (liste[i].dimensione < CHANNEL_ELIMINATION_THRESHOLD && channel)
