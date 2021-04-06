@@ -5,9 +5,9 @@ const ROLE_ID_APPROVATO = '398543268754751489';
 
 
 /****************************************************************************
-*  Assegna ad un utente qualunque il ruolo di Approvato | Livello 3+		    *
-*	- Disponibile solo per gli utenti con il ruolo Veterani | Livello 20+	    *
-*																			                                      *
+*  Assegna ad un utente qualunque il ruolo di Approvato | Livello 3+		*
+*	- Disponibile solo per gli utenti con il ruolo Veterani | Livello 20+	*
+*																			*
 ****************************************************************************/
 
 class Approva extends Command {

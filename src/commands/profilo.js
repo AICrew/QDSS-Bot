@@ -9,7 +9,7 @@ const Discord = require("discord.js");
 * di: Stato (online, afk, ...), Livello e XP, Reputazione ed elenco dei giochi per i		*
 * quali l'utente ha registrato un account alla relativa lista								*
 *	- l'utente è selezionato tramite menzione o, se omesso, si assume l'autore del comando	*
-*	- l'elenco è formattato all'interno di un MessageEmbed di Discord							*
+*	- l'elenco è formattato all'interno di un MessageEmbed di Discord						*
 *																							*
 ********************************************************************************************/
 

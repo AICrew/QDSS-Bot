@@ -3,10 +3,10 @@ const QDSS_DB = require("../../util/qdss-sqlite.js");
 
 
 /****************************************************************************************
-*  The QUERY command is used to forward SQL queries (the concatenation of command		    *
-*  arguments) and execute them on the database, returning a message with the records	  *
-*  selected by the query or an error message if the operation failed.					          *
-*																						                                            *
+*  The QUERY command is used to forward SQL queries (the concatenation of command		*
+*  arguments) and execute them on the database, returning a message with the records	*
+*  selected by the query or an error message if the operation failed.					*
+*																						*
 ****************************************************************************************/
 
 class Query extends Command {
@@ -22,8 +22,8 @@ class Query extends Command {
 
   async run(message, args, level) {
   
-	  // Apertura della connessione al DB ed esecuzione della query contenuta nel messaggio
-	  const query = args.join(" ");
+	// Apertura della connessione al DB ed esecuzione della query contenuta nel messaggio
+	const query = args.join(" ");
     const db = QDSS_DB.Open();
 	
     db.allAsync(query).then( (rows) => 

@@ -3,10 +3,10 @@ const QDSS_DB = require("../util/qdss-sqlite.js");
 	
 	
 /********************************************************************************
-*  Il comando REQ_LIST visualizza tutte le richieste avanzate dagli utenti		  *
-*  e memorizzate nel database, filtrando solo quelle con Status = 'Open'		    *
-*	- l'elenco è formattato all'interno di un code block di Discord				        *
-*																				                                        *
+*  Il comando REQ_LIST visualizza tutte le richieste avanzate dagli utenti		*
+*  e memorizzate nel database, filtrando solo quelle con Status = 'Open'		*
+*	- l'elenco è formattato all'interno di un code block di Discord				*
+*																				*
 ********************************************************************************/
 
 class R_list extends Command {
@@ -50,8 +50,8 @@ class R_list extends Command {
           else
           {
             request_list += "```";
-            message.channel.send(request_list);	 		      // Si invia il messaggio pieno
-            request_list = "```asciidoc\n" + request;     // e se ne inizia uno nuovo
+            message.channel.send(request_list);	 			// Si invia il messaggio pieno
+            request_list = "```asciidoc\n" + request;		// e se ne inizia uno nuovo
           }
         }
         

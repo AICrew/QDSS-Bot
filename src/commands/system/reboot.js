@@ -1,10 +1,10 @@
 const Command = require("../../base/Command.js");
 
 
-/*********************************************
-*  REBOOTs the bot, reloading all commands   *
-*											                       *
-*********************************************/
+/********************************************
+*  REBOOTs the bot, reloading all commands	*
+*											*
+********************************************/
 
 class Reboot extends Command {
   constructor(client) {

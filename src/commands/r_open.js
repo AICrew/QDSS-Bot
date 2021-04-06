@@ -6,9 +6,9 @@ const MAX_REQUEST_LENGTH = 250;
 
 /****************************************************************************
 *  Con il comando R_OPEN, un utente può proporre una modifica o richiedere	*
-*  l'aggiunta di un gioco al QDSS-Bot										                    *
-*   - la richiesta viene salvata nel database con un ID incrementale		    *
-*																			                                      *
+*  l'aggiunta di un gioco al QDSS-Bot										*
+*   - la richiesta viene salvata nel database con un ID incrementale		*
+*																			*
 ****************************************************************************/
 
 class R_open extends Command {
@@ -44,7 +44,7 @@ class R_open extends Command {
       return;
     }
 
-	  const db = QDSS_DB.Open();
+	const db = QDSS_DB.Open();
 	
     // Inserimento della richiesta nell'apposita tabella del database
     db.runAsync("INSERT INTO Richieste (User, Messaggio, Status) VALUES (?,?, 'Open')", [author, requestMsg])

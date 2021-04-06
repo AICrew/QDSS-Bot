@@ -3,10 +3,10 @@ const tools = require("../../base/tools.js")
 const { version } = require("discord.js");
 
 
-/*************************************************************************************
-*  This command can be used to get some useful bot performance and usage statistics  *
-*																					                                           *
-*************************************************************************************/
+/****************************************************************************************
+*  This command can be used to get some useful bot performance and usage statistics		*
+*																						*
+****************************************************************************************/
 
 class Stats extends Command {
   constructor(client) {

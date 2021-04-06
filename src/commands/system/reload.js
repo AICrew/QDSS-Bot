@@ -2,10 +2,10 @@ const Command = require("../../base/Command.js");
 
 
 /****************************************************************************************
-*  Use this command, followed by the name of another command, to RELOAD it's script		  *
-*  after it has been modified															                              *
-*   - make sure that it has no compiler errors or it won't load							            *
-*																						                                            *
+*  Use this command, followed by the name of another command, to RELOAD it's script		*
+*  after it has been modified															*
+*   - make sure that it has no compiler errors or it won't load							*
+*																						*
 ****************************************************************************************/
 
 class Reload extends Command {

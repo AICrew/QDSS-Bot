@@ -3,7 +3,7 @@ const Command = require("../../base/Command.js");
 
 /************************************************************************************
 * Shows the permission level (0...10) for this bot to the user calling the command	*
-*																					                                          *
+*																					*
 ************************************************************************************/
 
 class MyLevel extends Command {

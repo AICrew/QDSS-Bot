@@ -2,8 +2,8 @@ const Command = require("../../base/Command.js");
 
 
 /********************************************************************************
-* Ping the bot and receive info about it's latency and the API response times	  *
-*																				                                        *
+* Ping the bot and receive info about it's latency and the API response times	*
+*																				*
 ********************************************************************************/
 
 class Ping extends Command {
