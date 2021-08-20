@@ -2,13 +2,13 @@ const Command = require("../../base/Command.js");
 
 
 /****************************************************************************************
-*  Use this command, followed by the name of another command, to RELOAD it's script		*
-*  after it has been modified															*
-*   - make sure that it has no compiler errors or it won't load							*
-*																						*
+*  Use this command, followed by the name of another command, to RELOAD it's script     *
+*  after it has been modified                                                           *
+*   - make sure that it has no compiler errors or it won't load                         *
+*                                                                                       *
 ****************************************************************************************/
 
-class Reload extends Command {
+class Cmd_Reload extends Command {
   constructor(client) {
     super(client, {
       name: "reload",
@@ -19,8 +19,10 @@ class Reload extends Command {
     });
   }
 
-  async run(message, args, level) {  // eslint-disable-line no-unused-vars
-    if (!args || args.size < 1) return message.reply("Must provide a resource to reload. Derp.");
+  async run(message, args) {  // eslint-disable-line no-unused-vars
+    
+    if (!args || args.size < 1) 
+      return message.reply("Must provide a resource to reload. Derp.");
     
     if (args[0] === 'dashboard')
     {
@@ -43,8 +45,7 @@ class Reload extends Command {
 
       message.reply(`The command \`${commands.help.name}\` has been reloaded`);
     }
-
   }
 }
 
-module.exports = Reload;
+module.exports = Cmd_Reload;

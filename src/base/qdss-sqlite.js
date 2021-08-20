@@ -1,4 +1,4 @@
-const dbFile = '../../database/sqlite.db';
+const dbFile = '../database/sqlite.db';
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports = {

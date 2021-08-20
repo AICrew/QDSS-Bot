@@ -96,8 +96,8 @@ const config = {
     { level: 10,
       name: "Bot Owner", 
       // Another simple check, compares the message author id to the one stored in the config file.
-      check: async (message) => {
-        var ownerId = await message.client.fetchApplication().then((appInfo) => appInfo.owner.ownerID);
+      check: (message) => {
+        var ownerId = message.client.application.ownerId;
         return ownerId === message.author.id;
       }
     },
@@ -107,7 +107,10 @@ const config = {
       name: "Server Owner", 
       // Simple check, if the guild owner id matches the message author's ID, then it will return true.
       // Otherwise it will return false.
-      check: (message) => message.channel.type === "text" ? (message.guild.owner.user.id === message.author.id ? true : false) : false
+      check: (message) => {
+        return message.channel.type === "GUILD_TEXT" &&
+        message.guild.ownerId === message.author.id
+      }
     }
   ]
 };

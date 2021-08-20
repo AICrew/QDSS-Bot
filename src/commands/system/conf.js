@@ -1,16 +1,17 @@
 const Command = require("../../base/Command.js");
+const { Formatters } = require("discord.js");
 
 
 /****************************************************************************************************
-* FOR GUILD SETTINGS SEE set.js !																	*
-* This command is used to modify the bot's default configuration values, which affects all guilds.	*
-* If a default setting is not specifically overwritten by a guild, changing a default here will		*
-* change it for that guild. The `add` action adds a key to the configuration of every guild in		*
-* your bot. The `del` action removes the key also from every guild, and loses its value forever.	*
-*																									*
+* FOR GUILD SETTINGS SEE set.js !                                                                   *
+* This command is used to modify the bot's default configuration values, which affects all guilds.  *
+* If a default setting is not specifically overwritten by a guild, changing a default here will     *
+* change it for that guild. The `add` action adds a key to the configuration of every guild in      *
+* your bot. The `del` action removes the key also from every guild, and loses its value forever.    *
+*                                                                                                   *
 ****************************************************************************************************/
 
-class Conf extends Command {
+class Cmd_Conf extends Command {
   constructor(client) {
     super(client, {
       name: "conf",
@@ -23,7 +24,7 @@ class Conf extends Command {
     });
   }
 
-  async run(message, [action, key, ...value], level) { // eslint-disable-line no-unused-vars
+  async run(message, [action, key, ...value]) {  // eslint-disable-line no-unused-vars
     
     // Retrieve Default Values from the default settings in the bot.
     const defaults = this.client.settings.get("default");
@@ -66,7 +67,7 @@ class Conf extends Command {
       // If they respond with y or yes, continue.
       if (["y", "yes"].includes(response)) {
 
-		// We delete the default `key` here.
+        // We delete the default `key` here.
         delete defaults[key];
         this.client.settings.set("default", defaults);
       
@@ -97,9 +98,9 @@ class Conf extends Command {
       Object.entries(this.client.settings.get("default")).forEach(([key, value]) => {
         array.push(`${key}${" ".repeat(20 - key.length)}::  ${value}`); 
       });
-      await message.channel.send(`= Bot Default Settings = \n${array.join("\n")}`, {code: "asciidoc"});
-	}
+      await message.channel.send(Formatters.codeBlock("asciidoc", `= Bot Default Settings = \n${array.join("\n")}`));
+	  }
   }
 }
 
-module.exports = Conf;
+module.exports = Cmd_Conf;

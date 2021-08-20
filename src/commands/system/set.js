@@ -1,23 +1,24 @@
 const Command = require("../../base/Command.js");
+const { Formatters } = require("discord.js");
 
 
 /************************************************************************************
-*  This command is to modify/edit guild configuration. Perm Level 3 for admins		*
-*  and owners only. Used for changing prefixes and role names and such.				*
-*																					*
-*   - Note that there's no "checks" in this basic version - no config "types" 		*
-*     like Role, String, Int, etc... It's basic, to be extended with your hands!	*
-*																					*
-*   - Note the **destructuring** here. instead of `args` we have :					*
-*  	  [action, key, ...value]														*
-*  	  This gives us the equivalent of either:										*
-*  	  const action = args[0]; const key = args[1]; const value = args.slice(2);		*
-*  	  OR the same as:																*
-*  	  const [action, key, ...value] = args;											*
-*																					*
+*  This command is to modify/edit guild configuration. Perm Level 3 for admins      *
+*  and owners only. Used for changing prefixes and role names and such.             *
+*                                                                                   *
+*   - Note that there's no "checks" in this basic version - no config "types"       *
+*     like Role, String, Int, etc... It's basic, to be extended with your hands!    *
+*                                                                                   *
+*   - Note the **destructuring** here. instead of `args` we have :                  *
+*     [action, key, ...value]                                                       *
+*     This gives us the equivalent of either:                                       *
+*     const action = args[0]; const key = args[1]; const value = args.slice(2);     *
+*     OR the same as:                                                               *
+*     const [action, key, ...value] = args;                                         *
+*                                                                                   *
 ************************************************************************************/
 
-class Set extends Command {
+class Cmd_Set extends Command {
   constructor(client) {
     super(client, {
       name: "set",
@@ -26,7 +27,7 @@ class Set extends Command {
       usage: "set <view/get/edit> <key> <value>",
       aliases: ["setting", "settings"],
       permLevel: "Bot Admin",
-	  guildOnly: true
+      guildOnly: true
     });
   }
 
@@ -56,8 +57,8 @@ class Set extends Command {
       // Modify the guild overrides directly.
       this.client.settings.set(message.guild.id, joinedValue, key);
       message.reply(`${key} successfully edited to ${joinedValue}`);
-    } else
-  
+    } 
+    else
     // If a user does `-set del <key>`, let's ask the user if they're sure...
     if (action === "del" || action === "reset") {
       if (!key) return message.reply("Please specify a key to delete (reset).");
@@ -78,23 +79,23 @@ class Set extends Command {
       if (["n","no","cancel"].includes(response)) {
         message.reply(`Your setting for \`${key}\` remains at \`${settings[key]}\``);
       }
-    } else
-  
+    } 
+    else
     // Using `-set get <key>` we simply return the current value for the guild.
     if (action === "get") {
       if (!key) return message.reply("Please specify a key to view");
       if (!settings[key]) return message.reply("This key does not exist in the settings");
       message.reply(`The value of ${key} is currently ${settings[key]}`);
-      
-    } else {
+    } 
+    else {
       // Otherwise, the default action is to return the whole configuration;
       const array = [];
       Object.entries(settings).forEach(([key, value]) => {
         array.push(`${key}${" ".repeat(20 - key.length)}::  ${value}`); 
       });
-      await message.channel.send(`= Current Guild Settings =\n${array.join("\n")}`, {code: "asciidoc"});
+      await message.channel.send(Formatters.codeBlock("asciidoc", `= Current Guild Settings =\n${array.join("\n")}`));
     }
   }
 }
 
-module.exports = Set;
+module.exports = Cmd_Set;

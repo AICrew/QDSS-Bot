@@ -5,14 +5,13 @@
   "main": "./src/index.js",
   "dependencies": {
     "@discordjs/uws": "^10.149.0",
-    "better-sqlite-pool": "^0.2.3",
-    "better-sqlite3": "^5.4.3",
+    "@mapbox/node-pre-gyp": "^1.0.5",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.4.1",
     "bufferutil": "^4.0.1",
     "chalk": "^3.0.0",
     "cheerio": "^1.0.0-rc.3",
-    "discord.js": "^12.3.1",
+    "discord.js": "^13.1.0",
     "dotenv": "^8.2.0",
     "ejs": "^3.0.2",
     "enmap": "^5.2.4",
@@ -31,13 +30,13 @@
     "popper.js": "^1.16.1",
     "redis": "^3.0.2",
     "redis-server": "^1.2.2",
-    "sqlite3": "^4.1.1",
+    "sqlite3": "^5.0.2",
+    "tar": "^6.1.8",
     "turndown": "^6.0.0",
     "utf-8-validate": "^5.0.2",
     "wpapi": "^1.2.1",
     "youtube-search": "^1.1.4"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

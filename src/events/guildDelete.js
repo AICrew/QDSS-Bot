@@ -7,8 +7,9 @@ module.exports = class {
 
   async run(guild) 
   {
-    this.client.user.setActivity('+help', { type: 'PLAYING' });
-    
+    // Log the event
+    this.client.logger.log(`Guild has been abandoned: ${guild.name} (${guild.id})`);
+
     // Well they're gone. Let's remove them from the settings!
     this.client.settings.delete(guild.id);
   }

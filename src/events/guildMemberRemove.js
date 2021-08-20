@@ -5,18 +5,15 @@ module.exports = class {
     this.client = client;
   }
 
-  async run(member) {
-	const QDSS_DB = require("../util/qdss-sqlite.js");
-	const db = QDSS_DB.Open();
+  async run(member) 
+  {
+	  // Log the event 
+	  this.client.logger.log(`User ${member.id} (${member.user.tag}) left the server`);
 
-	console.log("User " + member.id + " (" + member.user.tag + ") left the server");
-	
-	// Rimozione dei dati dell'utente dal database
-	db.removeUser(member.id).then( () => db.close() )
-	.catch( (err) => {
-		db.close();
-		throw err;
-	});
-
-  }
+	  // Remove user information from the database
+	  const db = this.client.database.open();
+	  db.removeUser(member.id)
+	    .catch(err => this.client.logger.error(err))
+      .finally(() => db.close());
+  }  
 };

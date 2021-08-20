@@ -7,7 +7,7 @@ module.exports = class {
 
   async run(guild) 
   {
-    this.client.user.setActivity('+help', { type: 'PLAYING' });
+    // Log the event, but no action is required.
     this.client.logger.log(`New guild has been joined: ${guild.name} (${guild.id}) with ${guild.memberCount - 1} members`);
   }
 };

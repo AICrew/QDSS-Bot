@@ -5,7 +5,7 @@ dotenv.config({path: './.env'});
 if (Number(process.version.slice(1).split(".")[0]) < 8) throw new Error("Node 8.0.0 or higher is required. Update Node on your system.");
 
 // Load up the discord.js library
-const Discord = require("discord.js");
+const { Client, Collection, Intents, MessageEmbed } = require('discord.js');
 // We also load the rest of the things we need in this file:
 const { promisify } = require("util");
 const readdir = promisify(require("fs").readdir);
@@ -18,7 +18,7 @@ const RedisServer = require('redis-server');
 const server = new RedisServer(6379).open();
 
 
-class QdssBot extends Discord.Client {
+class QdssBot extends Client {
   constructor(options) {
     super(options);
 
@@ -29,16 +29,19 @@ class QdssBot extends Discord.Client {
 
     // Aliases and commands are put in collections where they can be read from,
     // catalogued, listed, etc.
-    this.commands = new Discord.Collection();
-    this.aliases = new Discord.Collection();
+    this.commands = new Collection();
+    this.aliases = new Collection();
 
     // Now we integrate the use of Evie's awesome Enhanced Map module, which
     // essentially saves a collection to disk. This is great for per-server configs,
     // and makes things extremely easy for this purpose.
     this.settings = new Enmap({ name: "settings", dataDir: "../data" });
 
-    //requiring the Logger class for easy console logging
-    this.logger = require("./util/Logger");
+    // Requiring the Logger class for easy console logging.
+    this.logger = require("./base/Logger.js");
+
+    // Add the database handle to the client object, for ease of access in commands.
+    this.database = require("./base/qdss-sqlite.js");
 
     // Basically just an async shortcut to using a setTimeout. Nothing fancy!
     this.wait = promisify(setTimeout);
@@ -179,7 +182,7 @@ class QdssBot extends Discord.Client {
   msg.reply(`Oh, I really love ${response} too!`);
   */
   async awaitReply(msg, question, limit = 60000) {
-    const filter = m=>m.author.id = msg.author.id;
+    const filter = m => m.author.id == msg.author.id;
     await msg.channel.send(question);
     try {
       const collected = await msg.channel.awaitMessages(filter, { max: 1, time: limit, errors: ["time"] });
@@ -194,25 +197,23 @@ class QdssBot extends Discord.Client {
 // some might call it `cootchie`. Either way, when you see `client.something`,
 // or `bot.something`, this is what we're refering to. Your client.
 const client = new QdssBot(
-  {ws:
-    {intents:[
-      "GUILDS", 
-      "GUILD_MEMBERS",
-      "GUILD_PRESENCES",
-      "GUILD_MESSAGES",
-      "GUILD_MESSAGE_REACTIONS",
-      "DIRECT_MESSAGES"
-      /*"GUILD_BANS",
-      "GUILD_EMOJIS",
-      "GUILD_INTEGRATIONS",
-      "GUILD_WEBHOOKS",
-      "GUILD_INVITES",
-      "GUILD_VOICE_STATES",
-      "DIRECT_MESSAGE_TYPING",
-      "DIRECT_MESSAGE_REACTIONS",
-      "GUILD_MESSAGE_TYPING"*/
-    ]}
-  }
+  { intents: [
+    Intents.FLAGS.GUILDS, 
+    Intents.FLAGS.GUILD_MEMBERS,
+	  //Intents.FLAGS.GUILD_BANS,
+	  //Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+	  //Intents.FLAGS.GUILD_INTEGRATIONS,
+	  //Intents.FLAGS.GUILD_WEBHOOKS,
+	  //Intents.FLAGS.GUILD_INVITES,
+	  //Intents.FLAGS.GUILD_VOICE_STATES,
+	  Intents.FLAGS.GUILD_PRESENCES,
+    Intents.FLAGS.GUILD_MESSAGES,
+	  Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+	  //Intents.FLAGS.GUILD_MESSAGE_TYPING,
+    Intents.FLAGS.DIRECT_MESSAGES,
+	  //Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+    //Intents.FLAGS.DIRECT_MESSAGE_TYPING
+  ]}
 );
 
 
@@ -256,12 +257,12 @@ const init = async () => {
 init();
 
 client.on("disconnect", () => client.logger.warn("Bot is disconnecting..."))
-  .on("reconnect", () => client.logger.log("Bot reconnecting...", "log"))
+  .on("reconnect", () => client.logger.log("Bot reconnecting..."))
   .on("error", e => client.logger.error(e))
   .on("warn", info => client.logger.warn(info));
 
 
-/* MISCELANEOUS NON-CRITICAL FUNCTIONS */
+/* MISCELLANEOUS NON-CRITICAL FUNCTIONS */
 
 // EXTENDING NATIVE TYPES IS BAD PRACTICE. Why? Because if JavaScript adds this
 // later, this conflicts with native code. Also, if some other lib you use does
@@ -294,74 +295,65 @@ process.on("unhandledRejection", err => {
 
 
 
-// ======== QDSS-bot =========
+// ======== QDSS-Bot =========
 
-// Database
-const QDSS_DB = require("./util/qdss-sqlite.js");
-
-
-// Query pianificata di aggiornamento degli utenti nel DB
+// Scheduled query for updating the users database
 const cron = require("node-cron");
 cron.schedule("0 1,7,13,19 * * *", function() {
 	
-	const db = QDSS_DB.Open();
-    db.allAsync("SELECT * FROM Utenti").then( async (users) => 
+	const db = client.database.open();
+  db.allAsync("SELECT * FROM Utenti").then( async (users) => 
 	{
 	  return new Promise( async (resolve, reject) =>
 	  {
-		if (!users || users.length == 0)
-			resolve();
-		else 
-		{
-			for (let i = 0; i < users.length; i++)
-			{
-			  const id = users[i].userId;
-			  const tag = users[i].username;
+      if (!users || users.length == 0)
+      {
+        resolve();
+      }
+      else 
+      {
+        for (let i = 0; i < users.length; i++)
+        {
+          const id = users[i].userId;
+          const tag = users[i].username;
 
-			  const user = await client.users.fetch(users[i].userId, true)
-			  .catch( async (err) => 
-			  {
-				// Rimozione dell'utente dal database
-				client.logger.log("User " + id + " does not exist anymore and will be removed (" + err + ")", "log");
-				await db.removeUser(id);
-			  });
-				
-			  if (!user) continue;
-				
-			  const guildMember = await client.guilds.cache.first().members.fetch(user, true)
-			  .catch( (err) => client.logger.log("Id " + id + " doesn't resolve to any GuildMember (" + err + ")", "log") );
+          const user = await client.users.fetch(users[i].userId, true)
+            .catch( async (err) => 
+            {
+              // Remove user from the database
+              client.logger.log(`User ${id} does not exist anymore and will be removed (${err})`);
+              await db.removeUser(id);
+            });
+          
+          if (!user) continue;
+          
+          const guildMember = await client.guilds.cache.first().members.fetch(user, true)
+            .catch( (err) => client.logger.warn(`Id ${id} doesn't resolve to any GuildMember (${err})`));
 
-			  if (guildMember && guildMember.user.tag !== tag)
-			  {
-				// Aggiornamento nickname dell'utente
-				client.logger.log("Renaming [" + users[i].username + "] to [" + guildMember.user.tag + "]", "log");
-				await db.runAsync("UPDATE Utenti SET username = ? WHERE userId = ?", [guildMember.user.tag, id])
-				.catch( (err) => reject(err) );
-			  }
-			}
-			
-			resolve();
-		}
-	  })
-	  
-	})
-	.then( () => {
-		db.close();
-		client.logger.log("Users database update complete", "log");
-	})
-	.catch( (err) => {
-		db.close();
-		client.logger.error("Users database update failed with error " + err);
-	});
-	
-  },
-  {
-    scheduled: true,
-    timezone: "Europe/Rome"
-  });
+          if (guildMember && guildMember.user.tag !== tag)
+          {
+            // Update user nickname
+            client.logger.log(`Renaming [${users[i].username}] to [${guildMember.user.tag}]`);
+            await db.runAsync("UPDATE Utenti SET username = ? WHERE userId = ?", [guildMember.user.tag, id])
+              .catch( (err) => reject(err) );
+          }
+        }
+        
+        resolve();
+      }
+    })
+  })
+  .catch( (err) => client.logger.error("Users database update failed with error: " + err) )
+	.then( () => client.logger.log("Users database update complete") )
+  .finally( () => db.close() );
+},
+{
+  scheduled: true,
+  timezone: "Europe/Rome"
+});
 
 
-// Azione pianificata per creazione di stanze dedicate ai giochi più popolari
+// Scheduled action to create text channels dedicated to the most popular games
 const QDSS_BOT_ROLE_ID = '552215756335611914';
 const STAFF_ROLE_ID = '334778240847708160';
 const CATEGORY_CHANNEL_ID = '592752263861108746';
@@ -369,146 +361,139 @@ const CHANNEL_CREATION_THRESHOLD = 8;
 const CHANNEL_ELIMINATION_THRESHOLD = 4;
 cron.schedule("0 * * * *", function() 
 {
-  const db = QDSS_DB.Open();
+  const db = client.database.open();
   db.allAsync("SELECT G.nomeCompleto, G.ruolo, COUNT(*) AS dimensione FROM Registrazioni R, Giochi G " +
     "WHERE G.nome = R.game GROUP BY G.nomeCompleto").then( async (liste) => 
   {
     return new Promise( async (resolve, reject) =>
     {
-    if (!liste || liste.length == 0)
-      resolve();
-    else 
-    {
-      const guild = client.guilds.cache.first();
-      const channels = guild.channels.cache.array();
-
-      for (let i = 0; i < liste.length; i++)
+      if (!liste || liste.length == 0)
       {
-        const channelName = tools.sanitizeTextChannelName(liste[i].nomeCompleto);
-        let channel = channels.find((val) => val.name === channelName);
+        resolve();
+      }
+      else 
+      {
+        const guild = client.guilds.cache.first();
+        const channels = guild.channels.cache;
 
-        let role = await guild.roles.fetch(liste[i].ruolo);
+        for (let i = 0; i < liste.length; i++)
+        {
+          const channelName = tools.sanitizeTextChannelName(liste[i].nomeCompleto);
+          let channel = channels.find((val) => val.name === channelName);
 
-        // Se il TextChannel corrispondente esiste deve essere eliminato
-        if (liste[i].dimensione < CHANNEL_ELIMINATION_THRESHOLD && channel)
-        {
-            channel.delete()
-            .catch( (err) => client.logger.error("Errore nell'eliminazione della stanza " + channelName + ": " + err));
-        }
-        // Se il TextChannel corrispondente non esiste deve essere creato
-        else if (liste[i].dimensione >= CHANNEL_CREATION_THRESHOLD && !channel)
-        {
-            guild.createChannel(channelName, {
+          let role = await guild.roles.fetch(liste[i].ruolo);
+
+          // If an underpopulated channel exists, it must be eliminated
+          if (liste[i].dimensione < CHANNEL_ELIMINATION_THRESHOLD && channel)
+          {
+              channel.delete()
+                .catch( (err) => client.logger.error(`Errore nell'eliminazione della stanza ${channelName}: ${err}`) );
+          }
+          // If a decently-populated list does not have a dedicated channel, it must be created
+          else if (liste[i].dimensione >= CHANNEL_CREATION_THRESHOLD && !channel)
+          {
+            guild.channels.create(channelName, {
               type: 'text',
               parent: CATEGORY_CHANNEL_ID,
               permissionOverwrites: [
               {
-                  id: guild.id,               // Utenti normali non sono in grado di vedere la stanza
+                  id: guild.id,               // Normal users are not allowed to view the channel
                   deny: ['VIEW_CHANNEL']
               },
 
               {
                   id: QDSS_BOT_ROLE_ID,
-                  allow: ['VIEW_CHANNEL', 'ADMINISTRATOR']    // Il bot può vedere il canale ed gestirlo
+                  allow: ['VIEW_CHANNEL', 'ADMINISTRATOR']      // The bot can view and administrate the channel
               },
 
               {
                   id: STAFF_ROLE_ID,
-                  allow: ['VIEW_CHANNEL', 'SEND_MESSAGES',    // Lo staff può utilizzare il canale per esigenze di moderazione
-                  'MANAGE_MESSAGES', 'ADD_REACTIONS', 
-                  'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS', 'CHANGE_NICKNAME',
-                   'MENTION_EVERYONE', 'MANAGE_NICKNAMES', 'KICK_MEMBERS', 'BAN_MEMBERS'],
+                  allow: ['VIEW_CHANNEL', 'SEND_MESSAGES',      // The staff can moderate the channel
+                    'MANAGE_MESSAGES', 'ADD_REACTIONS', 
+                    'EMBED_LINKS', 'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS', 'CHANGE_NICKNAME',
+                    'MENTION_EVERYONE', 'MANAGE_NICKNAMES', 'KICK_MEMBERS', 'BAN_MEMBERS'],
                   deny: ['CREATE_INSTANT_INVITE']
               },
 
               {
                   id: role.id,
-                  allow: ['VIEW_CHANNEL', 'SEND_MESSAGES',    // Permessi per i membri del ruolo per cui è creata la stanza
-                   'ADD_REACTIONS', 'EMBED_LINKS',
-                   'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS', 'CHANGE_NICKNAME'],
+                  allow: ['VIEW_CHANNEL', 'SEND_MESSAGES',      // Permissions only for members having the role for which the channel was created
+                    'ADD_REACTIONS', 'EMBED_LINKS',
+                    'ATTACH_FILES', 'USE_EXTERNAL_EMOJIS', 'CHANGE_NICKNAME'],
                   deny: ['MENTION_EVERYONE', 'CREATE_INSTANT_INVITE']
               }]
             })
+            .catch( (err) => client.logger.error(`Errore nella creazione della stanza ${channelName}: ${err}`) )
             .then( (chan) => 
             {
                 chan.send(`${role} Questa stanza è stata creata automaticamente per mettere a disposizione un luogo in cui discutere` + 
                   ` liberamente di ${liste[i].nomeCompleto}, organizzare partite e pubblicare annunci comunicando direttamente con gli` + 
                   ` altri utenti iscritti alla lista del gioco. Rimane sempre valido il regolamento generale del server, per cui non` + 
                   ` esitate a contattare Admin o Staff per ogni evenienza o necessità.`);
-            })
-            .catch( (err) => client.logger.error("Errore nella creazione della stanza " + channelName + ": " + err));
+            });
+          }
         }
+        resolve();
       }
-      
-      resolve();
-    }
     })
-
   })
-  .then( () => {
-    db.close();
-    client.logger.log("TextChannels update complete", "log");
-  })
-  .catch( (err) => {
-    db.close();
-    client.logger.error("TextChannels update failed with error " + err);
-  });
-  
-  },
-  {
-    scheduled: true,
-    timezone: "Europe/Rome"
-  });
+  .catch( (err) => client.logger.error("TextChannels update failed with error: " + err) )
+  .then( () => client.logger.log("TextChannels update complete") )
+  .finally( () => db.close() );
+},
+{
+  scheduled: true,
+  timezone: "Europe/Rome"
+});
 
 
-//feed
-var cheerio = require('cheerio')
-var Watcher  = require('feed-watcher'),
-feed     = 'https://qdss.it/feed',
-interval = 3600 // seconds
-var TurndownService = require('turndown');
+// Feed
+const cheerio = require('cheerio')
+const Watcher = require('feed-watcher'),
+feed      = 'https://qdss.it/feed',
+interval  = 3600 // seconds
+const TurndownService = require('turndown');
+const watcher = new Watcher(feed, interval);
 
-var watcher = new Watcher(feed, interval)
+const FEED_CHANNEL_ID = '344523238719619083';
 
 // Check for new entries every n seconds.
 watcher.on('new entries', function (entries) {
-  entries.forEach(function (entry) {
+  entries.forEach( async function (entry) {
     console.log(entry['rss:title']['#'])
 
-    var title = entry.title;
-    var author = entry.author;
-    var link = entry.link;
-    var logo= 'https://scontent.fbri1-1.fna.fbcdn.net/v/t1.0-9/16640956_558100834395740_3216339822482768615_n.png?_nc_cat=110&_nc_sid=85a577&_nc_ohc=1wXkuKZo7dgAX-HoyGb&_nc_ht=scontent.fbri1-1.fna&oh=92909a49c2f09b260eb9b3345994e334&oe=5EC35511';
-    var date = entry.date;
-    var description = entry['rss:description']['#'];
+    const title = entry.title;
+    const author = entry.author;
+    const link = entry.link;
+    const logo = 'https://scontent.fbri1-1.fna.fbcdn.net/v/t1.0-9/16640956_558100834395740_3216339822482768615_n.png?_nc_cat=110&_nc_sid=85a577&_nc_ohc=1wXkuKZo7dgAX-HoyGb&_nc_ht=scontent.fbri1-1.fna&oh=92909a49c2f09b260eb9b3345994e334&oe=5EC35511';
+    const date = entry.date;
+    const description = entry['rss:description']['#'];
     const $ = cheerio.load(description);
-
-    var channelId= '344523238719619083';
     
-    var img = $('img').attr('src');
+    const img = $('img').attr('src');
     $('post-thumbnail').remove();
 
-    var htmldescription = $.html()
+    const htmldescription = $.html();
 
-    var turndownService = new TurndownService()
-
-    turndownService.addRule('url', {
+    const turndownService = new TurndownService();
+    turndownService.addRule('url', 
+    {
       filter: function (node, options) {
         return (
           options.linkStyle === 'inlined' &&
           node.nodeName === 'A' &&
           node.getAttribute('href')
-        )
+        );
       },
       replacement: function (content, node) {
-        var href = node.getAttribute('href')
-        var title = node.title ? ' "' + node.title + '"' : ''
-        return '[' + content + '](' + href + title + ')'
+        const href = node.getAttribute('href');
+        const title = node.title ? ' "' + node.title + '"' : '';
+        return '[' + content + '](' + href + title + ')';
       }
-      
-    })
-    var descMarkdown = turndownService.turndown(htmldescription);
-    const articolo = new Discord.MessageEmbed()
+    });
+    const descMarkdown = turndownService.turndown(htmldescription);
+    
+    const article = new MessageEmbed()
       .setTitle(title)
       .setAuthor(author)
       .setImage(img)
@@ -517,20 +502,17 @@ watcher.on('new entries', function (entries) {
       .setDescription(descMarkdown)
       .setTimestamp(date);
 
-      client.channels.get(channelId).send(articolo);
-
-
+      client.channels.fetch(FEED_CHANNEL_ID)
+        .catch((err) => client.logger.error(err))
+        .then(channel => channel.send(article));
   })
 })
 
 // Start watching the feed.
 watcher
 .start()
-.then(function (entries) {
-})
-.catch(function(error) {
-console.error(error)
-})
+.then((entries) => {})
+.catch((error) => client.logger.error(error));
 
 // Stop watching the feed.
-//watcher.stop()
+//watcher.stop();

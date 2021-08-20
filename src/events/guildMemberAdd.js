@@ -7,7 +7,7 @@ module.exports = class {
 
   async run(member) 
   {
-	// Load the guild's settings
+    // Load the guild's settings
     const settings = this.client.getSettings(member.guild);
   
     // If welcome is off, don't proceed (don't welcome the user)
@@ -17,7 +17,9 @@ module.exports = class {
     const welcomeMessage = settings.welcomeMessage.replace("{{user}}", member.user.tag);
 
     // Send the welcome message to the welcome channel.
-    // There's a place for more configs here.
-    member.guild.channels.cache.find("name", settings.welcomeChannel).send(welcomeMessage).catch(console.error);
+    member.guild.channels.cache
+      .find(channel => channel.name === settings.welcomeChannel)
+      .send(welcomeMessage)
+      .catch(err => this.client.logger.error(err));
   }
 };

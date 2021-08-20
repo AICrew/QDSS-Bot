@@ -1,24 +1,27 @@
-/*
-Logger class for easy and aesthetically pleasing console logging
-*/
 const chalk = require("chalk");
 const tools = require("../base/tools.js")
 
-class Logger {
-  static log(content, type = "log") {
+/**
+ * Logger class for easy and aesthetically pleasing console logging
+ */
+class Logger 
+{
+  static write(content, type)
+  {
     const timestamp = `[${tools.getTimestamp()}]:`;
-    switch (type) {
+    switch (type) 
+    {
       case "log": {
         return console.log(`${timestamp} ${chalk.bgBlue(type.toUpperCase())} ${content} `);
       }
       case "warn": {
-        return console.log(`${timestamp} ${chalk.black.bgYellow(type.toUpperCase())} ${content} `);
+        return console.warn(`${timestamp} ${chalk.black.bgYellow(type.toUpperCase())} ${content} `);
       }
       case "error": {
-        return console.log(`${timestamp} ${chalk.bgRed(type.toUpperCase())} ${content} `);
+        return console.error(`${timestamp} ${chalk.bgRed(type.toUpperCase())} ${content} `);
       }
       case "debug": {
-        return console.log(`${timestamp} ${chalk.green(type.toUpperCase())} ${content} `);
+        return console.debug(`${timestamp} ${chalk.green(type.toUpperCase())} ${content} `);
       }
       case "cmd": {
         return console.log(`${timestamp} ${chalk.black.bgWhite(type.toUpperCase())} ${content}`);
@@ -29,21 +32,29 @@ class Logger {
       default: throw new TypeError("Logger type must be either warn, debug, log, ready, cmd or error.");
     } 
   }
-  
-  static error(content) {
-    return this.log(content, "error");
+
+  static log(content) {
+    return this.write(content, "log");
+  }
+
+  static warn(content) {
+    return this.write(content, "warn");
   }
   
-  static warn(content) {
-    return this.log(content, "warn");
+  static error(content) {
+    return this.write(content, "error");
   }
   
   static debug(content) {
-    return this.log(content, "debug");
+    return this.write(content, "debug");
   } 
   
   static cmd(content) {
-    return this.log(content, "cmd");
+    return this.write(content, "cmd");
+  } 
+
+  static ready(content) {
+    return this.write(content, "ready");
   } 
 }
 

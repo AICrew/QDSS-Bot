@@ -2,11 +2,11 @@ const Command = require("../../base/Command.js");
 
 
 /********************************************
-*  REBOOTs the bot, reloading all commands	*
-*											*
+*  REBOOTs the bot, reloading all commands  *
+*                                           *
 ********************************************/
 
-class Reboot extends Command {
+class Cmd_Reboot extends Command {
   constructor(client) {
     super(client, {
       name: "reboot",
@@ -18,17 +18,15 @@ class Reboot extends Command {
     });
   }
 
-  async run(message, args, level) {  // eslint-disable-line no-unused-vars
+  async run(message, args) {  // eslint-disable-line no-unused-vars
     try {
       await message.reply("Bot is shutting down.");
-      this.client.commands.forEach(async cmd => {
-        await this.client.unloadCommand(cmd);
-      });
+      this.client.commands.forEach(async cmd => await this.client.unloadCommand(cmd));
       process.exit(1);
     } catch (e) {
-      console.log(e);
+      this.client.logger.error(e);
     }
   }
 }
 
-module.exports = Reboot;
+module.exports = Cmd_Reboot;
