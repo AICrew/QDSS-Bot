@@ -58,7 +58,7 @@ class Cmd_Help extends Command {
       let command = args[0];
       if (this.client.commands.has(command)) {
         command = this.client.commands.get(command);
-        if (level < this.client.levelCache[command.conf.permLevel]) return;
+        if (message.author.permLevel < this.client.levelCache[command.conf.permLevel]) return;
         message.channel.send(Formatters.codeBlock("asciidoc", 
           `= ${command.help.name} = \n${command.help.description}\nusage:: ${command.help.usage}\naliases:: ${command.conf.aliases.join(", ")}`));
       }

@@ -14,7 +14,7 @@ class Cmd_Query extends Command {
   constructor(client) {
     super(client, {
       name: "query",
-      description: "Executes an SQL query on the database, with admin privileges.",
+      description: "Executes an SQL query on the database.",
       category: "System",
       usage: "+query <SQL code>",
       permLevel: "Bot Admin"

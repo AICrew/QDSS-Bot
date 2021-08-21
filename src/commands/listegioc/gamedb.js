@@ -132,10 +132,10 @@ class Cmd_GameDB extends Command {
         if (!role)
         {
           await message.guild.roles.create({
-              data: {
-                name: gameName,
-                color: gameColor,
-              },
+              name: gameName,
+              color: gameColor,
+              hoist: false,
+              mentionable: true,
               reason: `Ruolo creato per il gioco ${gameName}.`
             })
             .then( (role) => {
@@ -205,7 +205,7 @@ class Cmd_GameDB extends Command {
             // Eliminazione delle registrazioni al gioco in questione
             await db.runAsync("DELETE FROM Registrazioni WHERE game = ?", [game])
               .then( () => {
-                message.channel.send(`Le registrazioni a **${row.nomeCompleto}**" sono state eliminate con successo. :white_check_mark:`);
+                message.channel.send(`Le registrazioni a **${row.nomeCompleto}** sono state eliminate con successo. :white_check_mark:`);
               }, (error) => {
                 message.channel.send(`Errore durante la cancellazione delle registrazioni a **${row.nomeCompleto}**. :x:`);
                 this.client.logger.error(error);
