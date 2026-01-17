@@ -31,7 +31,7 @@
     "redis": "^3.0.2",
     "redis-server": "^1.2.2",
     "sqlite3": "^5.0.2",
-    "tar": "^6.1.8",
+    "tar": "^7.5.3",
     "turndown": "^6.0.0",
     "utf-8-validate": "^5.0.2",
     "wpapi": "^1.2.1",
